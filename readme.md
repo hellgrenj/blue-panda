@@ -1,0 +1,31 @@
+# blue-panda
+
+A chess program and a CLI game written in Go with zero dependencies.
+
+![blue-panda](./blue-panda.PNG)  
+(illustration by: [hotpot.ai](https://hotpot.ai/))
+
+
+
+**Run CLI game** (in ./cli): ```go run .```   
+**Run tests** (in root): ```go test ./...```  
+
+Supports:  
+* Human vs Human
+* Human vs Computer
+* Computer vs Computer
+* 100 games of Computer vs Computer
+
+Including:
+* Threefold repetition  
+* Fifty move rule
+* Check detection
+* Checkmate detection
+* Stalemate detection
+* Pawn promotion to Queen  
+* Saves history of latest game in ./history
+
+Left to implement:  
+* Castling  
+* En passant  
+
