@@ -8,6 +8,8 @@ A chess program and a CLI game written in Go with zero dependencies.
 
 
 **Run CLI game** (in ./cli): ```go run .```   
+![cli](./cli.PNG)  
+
 **Run tests** (in root): ```go test ./...```  
 
 Supports:  
