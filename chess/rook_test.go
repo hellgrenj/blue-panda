@@ -138,7 +138,7 @@ func TestMoveRook_can_not_move_diagonally(t *testing.T) {
 	if err == nil {
 		t.Errorf("Should not be able to move diagonally")
 	}
-	expectedErr := "rooks can not move diagonally"
+	expectedErr := "rooks can only move straight"
 	if strings.TrimSpace(err.Error()) != expectedErr {
 		t.Errorf("Expected error message %v, got %v", expectedErr, err.Error())
 	}

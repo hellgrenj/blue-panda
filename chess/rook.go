@@ -15,9 +15,6 @@ func moveRook(targetColumn string, targetRow int, b *Board, p *Piece, dryRun boo
 	if !dryRun && !p.MoveIsLegal(targetColumn, targetRow, b) {
 		return nil, fmt.Errorf("move is not legal")
 	}
-	if p.moveIsDiagonal(targetColumn, targetRow, b) {
-		return nil, fmt.Errorf("rooks can not move diagonally")
-	}
 	if !p.moveIsStraight(targetColumn, targetRow, b) {
 		return nil, fmt.Errorf("rooks can only move straight")
 	}
