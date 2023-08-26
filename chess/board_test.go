@@ -69,15 +69,16 @@ func TestKingIsInMate_Cant_escape_by_taking_if_its_moves_into_new_check(t *testi
 		t.Errorf("Failed to prep the board, %v", scenarioPrepError.Error())
 		return
 	}
+
 	expectedStateOfBoard := `
-	BR  ..  ..  BK  ..  BB  BN  BR 
-	bP  bP  bP  WQ  bP  bP  bP  bP 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	wP  wP  wP  ..  wP  wP  wP  wP 
-	..  ..  ..  WR  WK  WB  WN  WR
+	♜  .  .  ♚  .  ♝  ♞  ♜
+	♟  ♟  ♟  ♛  ♟  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	♙  ♙  ♙  .  ♙  ♙  ♙  ♙
+	.  .  .  ♖  ♔  ♗  ♘  ♖
 	`
 
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
@@ -152,15 +153,16 @@ func TestKingIsMate_is_false_if_queen_can_block(t *testing.T) {
 		t.Errorf("Failed to prep the board, %v", scenarioPrepError.Error())
 		return
 	}
+
 	expectedStateOfBoard := `
-	BR  BN  ..  BQ  BK  BB  BR  .. 
-	bP  BB  bP  bP  bP  bP  ..  bP 
-	..  bP  ..  ..  ..  ..  ..  .. 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	wP  wP  wP  wP  wP  wP  ..  wP 
-	WR  WN  WB  ..  ..  WQ  ..  WK 
+	♜  ♞  .  ♛  ♚  ♝  ♜  .
+	♟  ♝  ♟  ♟  ♟  ♟  .  ♟
+	.  ♟  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	♙  ♙  ♙  ♙  ♙  ♙  .  ♙
+	♖  ♘  ♗  .  .  ♕  .  ♔
 	`
 
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
@@ -257,14 +259,14 @@ func TestKingIsInMate_returns_false_transient_bug(t *testing.T) {
 	hBR.CurrentSquare = Square{Column: "H", Row: 6}
 
 	expectedStateOfBoard := `
-	..  ..  ..  ..  BK  BB  ..  ..
-	..  ..  bP  ..  ..  ..  bP  ..
-	bP  bP  ..  bP  ..  ..  ..  BR
-	..  ..  ..  ..  bP  BB  ..  bP
-	..  ..  ..  ..  ..  BQ  ..  ..
-	..  wP  wP  WK  ..  ..  ..  ..
-	wP  ..  ..  wP  wP  ..  wP  wP
-	WR  WN  ..  ..  ..  WB  ..  WR
+	. .  .  .  ♚  ♝  .  .
+	. .  ♟  .  .  .  ♟  .
+	♟  ♟  .  ♟  .  .  .  ♜
+	.  .  .  .  ♟  ♝  .  ♟
+	.  .  .  .  .  ♛  .  .
+	.  ♙  ♙  ♔  .  .  .  .
+	♙  .  .  ♙  ♙  .  ♙  ♙
+	♖  ♘  .  .  .  ♗  .  ♖
 	`
 
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
@@ -308,17 +310,17 @@ func TestKingIsInMate_returns_false_if_king_can_run_BLACK(t *testing.T) {
 		t.Errorf("Failed to prep the board, %v", scenarioPrepError.Error())
 		return
 	}
-	expectedStateOfBoard := `
-	BR  BN  BB  BQ  BK  BB  BN  BR 
-	..  ..  bP  ..  bP  ..  bP  bP 
-	bP  bP  ..  bP  ..  bP  ..  .. 
-	..  ..  ..  ..  ..  ..  ..  WB 
-	..  ..  ..  wP  ..  ..  ..  .. 
-	..  ..  ..  ..  ..  ..  wP  .. 
-	wP  wP  wP  ..  wP  wP  ..  wP 
-	WR  WN  WB  WQ  WK  ..  WN  WR
-	`
 
+	expectedStateOfBoard := `
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	.  .  ♟  .  ♟  .  ♟  ♟
+	♟  ♟  .  ♟  .  ♟  .  .
+	.  .  .  .  .  .  .  ♗
+	.  .  .  ♙  .  .  .  .
+	.  .  .  .  .  .  ♙  .
+	♙  ♙  ♙  .  ♙  ♙  .  ♙
+	♖  ♘  ♗  ♕  ♔  .  ♘  ♖
+	`
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
 		t.Errorf("Failed to assert expected board state, %v (Visible whitespace is ignored, something else differs!", err.Error())
 	}
@@ -352,14 +354,14 @@ func TestKingIsInCheck_returns_false_if_not_in_check(t *testing.T) {
 	bp2.CurrentSquare = Square{Column: "D", Row: 5}
 
 	expectedStateOfBoard := `
-	BR  BN  BB  BQ  BK  BB  BN  BR 
-	bP  ..  bP  ..  bP  bP  bP  bP 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	..  ..  ..  bP  ..  ..  ..  .. 
-	wP  bP  ..  ..  ..  ..  ..  .. 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	..  wP  wP  wP  wP  wP  wP  wP 
-	WR  WN  WB  WQ  WK  WB  WN  WR 
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  .  ♟  .  ♟  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	.  .  .  ♟  .  .  .  .
+	♙  ♟  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  ♙  ♙  ♙  ♙  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖
 	`
 
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {

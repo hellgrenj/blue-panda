@@ -153,7 +153,7 @@ func Print(b *chess.Board) {
 		if occupied {
 			fmt.Printf(" %v ", piece.GetAbbreveation())
 		} else {
-			fmt.Printf(" .. ")
+			fmt.Printf(" . ")
 		}
 	}
 	fmt.Printf("\n")

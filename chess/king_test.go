@@ -32,15 +32,16 @@ func TestMoveKing_can_move_1_square_in_any_direction(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to move the king horizontally from E3 to F3, %v", err.Error())
 	}
+
 	expectedStateOfBoard := `
-	BR  BN  BB  BQ  BK  BB  BN  BR
-	bP  bP  bP  bP  bP  bP  bP  bP
-	..  ..  ..  ..  ..  ..  ..  ..
-	..  ..  ..  ..  ..  ..  ..  ..
-	..  ..  ..  ..  wP  ..  ..  ..
-	..  ..  ..  ..  ..  WK  ..  ..
-	wP  wP  wP  wP  ..  wP  wP  wP
-	WR  WN  WB  WQ  ..  WB  WN  WR
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  ♟  ♟  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  ♙  .  .  .
+	.  .  .  .  .  ♔  .  .
+	♙  ♙  ♙  ♙  .  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  .  ♗  ♘  ♖
 	`
 
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
@@ -54,14 +55,14 @@ func TestMoveKing_can_move_1_square_in_any_direction(t *testing.T) {
 	}
 
 	expectedStateOfBoard = `
-	BR  BN  BB  BQ  BK  BB  BN  BR
-	bP  bP  bP  bP  bP  bP  bP  bP
-	..  ..  ..  ..  ..  ..  ..  ..
-	..  ..  ..  ..  ..  ..  ..  ..
-	..  ..  ..  ..  wP  WK  ..  ..
-	..  ..  ..  ..  ..  ..  ..  ..
-	wP  wP  wP  wP  ..  wP  wP  wP
-	WR  WN  WB  WQ  ..  WB  WN  WR
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  ♟  ♟  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  ♙  ♔  .  .
+	.  .  .  .  .  .  .  .
+	♙  ♙  ♙  ♙  .  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  .  ♗  ♘  ♖
 	`
 
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {

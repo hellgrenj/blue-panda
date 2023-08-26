@@ -62,17 +62,41 @@ type Piece struct {
 func (p *Piece) GetAbbreveation() string {
 	switch p.Type {
 	case pawn:
-		return strings.ToLower(p.Colour.String()[0:1]) + "P"
+		if p.Colour == White {
+			return "♙"
+		} else {
+			return "♟"
+		}
 	case rook:
-		return p.Colour.String()[0:1] + "R"
+		if p.Colour == White {
+			return "♖"
+		} else {
+			return "♜"
+		}
 	case knight:
-		return p.Colour.String()[0:1] + "N"
+		if p.Colour == White {
+			return "♘"
+		} else {
+			return "♞"
+		}
 	case bishop:
-		return p.Colour.String()[0:1] + "B"
+		if p.Colour == White {
+			return "♗"
+		} else {
+			return "♝"
+		}
 	case queen:
-		return p.Colour.String()[0:1] + "Q"
+		if p.Colour == White {
+			return "♕"
+		} else {
+			return "♛"
+		}
 	case king:
-		return p.Colour.String()[0:1] + "K"
+		if p.Colour == White {
+			return "♔"
+		} else {
+			return "♚"
+		}
 	default:
 		return "??"
 	}

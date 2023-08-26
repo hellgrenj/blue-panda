@@ -27,15 +27,16 @@ func TestMoveBishop_can_move_diagonally(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to move the bishop horizontally from F1 to B5, %v", err.Error())
 	}
+
 	expectedStateOfBoard := `
-	BR  BN  BB  BQ  BK  BB  BN  BR
-	bP  bP  bP  bP  bP  bP  bP  bP
-	..  ..  ..  ..  ..  ..  ..  ..
-	..  WB  ..  ..  ..  ..  ..  ..
-	..  ..  ..  ..  wP  ..  ..  ..
-	..  ..  ..  ..  ..  ..  ..  ..
-	wP  wP  wP  wP  ..  wP  wP  wP
-	WR  WN  WB  WQ  WK  ..  WN  WR
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  ♟  ♟  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	.  ♗  .  .  .  .  .  .
+	.  .  .  .  ♙  .  .  .
+	.  .  .  .  .  .  .  .
+	♙  ♙  ♙  ♙  .  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  ♔  .  ♘  ♖
 	`
 
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
