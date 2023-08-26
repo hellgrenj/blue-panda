@@ -76,14 +76,14 @@ func TestMoveKing_can_move_1_square_in_any_direction(t *testing.T) {
 	}
 
 	expectedStateOfBoard = `
-	BR  BN  BB  BQ  BK  BB  BN  BR
-	bP  bP  bP  bP  bP  bP  bP  bP
-	..  ..  ..  ..  ..  ..  ..  ..
-	..  ..  ..  ..  ..  ..  ..  ..
-	..  ..  ..  ..  wP  ..  ..  ..
-	..  ..  ..  ..  ..  WK  ..  ..
-	wP  wP  wP  wP  ..  wP  wP  wP
-	WR  WN  WB  WQ  ..  WB  WN  WR
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  ♟  ♟  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  ♙  .  .  .
+	.  .  .  .  .  ♔  .  .
+	♙  ♙  ♙  ♙  .  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  .  ♗  ♘  ♖
 	`
 
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
@@ -97,14 +97,14 @@ func TestMoveKing_can_move_1_square_in_any_direction(t *testing.T) {
 	}
 
 	expectedStateOfBoard = `
-	BR  BN  BB  BQ  BK  BB  BN  BR
-	bP  bP  bP  bP  bP  bP  bP  bP
-	..  ..  ..  ..  ..  ..  ..  ..
-	..  ..  ..  ..  ..  ..  ..  ..
-	..  ..  ..  ..  wP  ..  ..  ..
-	..  ..  ..  ..  WK  ..  ..  ..
-	wP  wP  wP  wP  ..  wP  wP  wP
-	WR  WN  WB  WQ  ..  WB  WN  WR
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  ♟  ♟  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  ♙  .  .  .
+	.  .  .  .  ♔  .  .  .
+	♙  ♙  ♙  ♙  .  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  .  ♗  ♘  ♖
 	`
 
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
@@ -376,15 +376,16 @@ func TestMoveKingBlack_cant_move_into_check(t *testing.T) {
 		t.Errorf("Expected an error when moving the King into check, but got none")
 		return
 	}
+
 	expectedStateOfBoard := `
-	BR  BN  BB  BQ  BK  BB  BN  BR 
-	bP  bP  bP  bP  ..  bP  bP  bP 
-	..  ..  ..  ..  bP  ..  ..  .. 
-	..  ..  ..  ..  ..  ..  WB  .. 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	..  ..  ..  wP  ..  ..  ..  .. 
-	wP  wP  wP  ..  wP  wP  wP  wP 
-	WR  WN  ..  WQ  WK  WB  WN  WR
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  ♟  .  ♟  ♟  ♟
+	.  .  .  .  ♟  .  .  .
+	.  .  .  .  .  .  ♗  .
+	.  .  .  .  .  .  .  .
+	.  .  .  ♙  .  .  .  .
+	♙  ♙  ♙  .  ♙  ♙  ♙  ♙
+	♖  ♘  .  ♕  ♔  ♗  ♘  ♖
 	`
 
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
@@ -420,15 +421,16 @@ func TestMoveKingBlack_cant_move_into_check_by_pawn(t *testing.T) {
 		t.Errorf("Expected an error when moving the King into check, but got none")
 		return
 	}
+
 	expectedStateOfBoard := `
-	BR  BN  BB  BQ  ..  BB  BN  BR 
-	bP  bP  bP  bP  ..  bP  bP  bP 
-	..  ..  ..  ..  bP  BK  ..  .. 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	..  ..  ..  ..  wP  ..  ..  .. 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	wP  wP  wP  wP  ..  wP  wP  wP 
-	WR  WN  WB  WQ  WK  WB  WN  WR 
+	♜  ♞  ♝  ♛  .  ♝  ♞  ♜
+	♟  ♟  ♟  ♟  .  ♟  ♟  ♟
+	.  .  .  .  ♟  ♚  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  ♙  .  .  .
+	.  .  .  .  .  .  .  .
+	♙  ♙  ♙  ♙  .  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖
 	`
 
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
@@ -466,15 +468,16 @@ func TestMoveKingBlack_cant_move_into_check_by_rook(t *testing.T) {
 		t.Errorf("Expected an error when moving the King into check, but got none")
 		return
 	}
+
 	expectedStateOfBoard := `
-	BR  BN  BB  BQ  ..  BB  BN  BR 
-	bP  bP  bP  bP  ..  bP  bP  bP 
-	..  ..  ..  ..  bP  BK  ..  .. 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	wP  ..  ..  ..  ..  ..  ..  .. 
-	..  ..  ..  ..  WR  ..  ..  .. 
-	..  wP  wP  wP  wP  wP  wP  wP 
-	..  WN  WB  WQ  WK  WB  WN  WR
+	♜  ♞  ♝  ♛  .  ♝  ♞  ♜
+	♟  ♟  ♟  ♟  .  ♟  ♟  ♟
+	.  .  .  .  ♟  ♚  .  .
+	.  .  .  .  .  .  .  .
+	♙  .  .  .  .  .  .  .
+	.  .  .  .  ♖  .  .  .
+	.  ♙  ♙  ♙  ♙  ♙  ♙  ♙
+	.  ♘  ♗  ♕  ♔  ♗  ♘  ♖
 	`
 
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {

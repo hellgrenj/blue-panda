@@ -13,17 +13,17 @@ func TestMoveKnight(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to move the knight from G1 to F3, %v", err.Error())
 	}
-	expectedStateOfBoard := `
-	BR  BN  BB  BQ  BK  BB  BN  BR
-	bP  bP  bP  bP  bP  bP  bP  bP
-	..  ..  ..  ..  ..  ..  ..  ..
-	..  ..  ..  ..  ..  ..  ..  ..
-	..  ..  ..  ..  ..  ..  ..  ..
-	..  ..  ..  ..  ..  WN  ..  ..
-	wP  wP  wP  wP  wP  wP  wP  wP
-	WR  WN  WB  WQ  WK  WB  ..  WR
-	`
 
+	expectedStateOfBoard := `
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  ♟  ♟  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  ♘  .  .
+	♙  ♙  ♙  ♙  ♙  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  ♔  ♗  .  ♖
+	`
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
 		t.Errorf("Failed to assert expected board state, %v (Visible whitespace is ignored, something else differs!", err.Error())
 	}
@@ -108,15 +108,16 @@ func TestMoveKnight_should_be_able_to_remove_check(t *testing.T) {
 	}
 
 	expectedStateOfBoard := `
-	BR  BN  BB  BQ  BK  BB  ..  .. 
-	bP  bP  bP  bP  bP  bP  ..  bP 
-	..  ..  ..  ..  ..  BN  ..  .. 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	..  ..  ..  ..  ..  ..  ..  WN 
-	wP  wP  wP  wP  wP  wP  ..  wP 
-	WR  WN  WB  WQ  WK  ..  BR  WR
+	♜  ♞  ♝  ♛  ♚  ♝  .  .
+	♟  ♟  ♟  ♟  ♟  ♟  .  ♟
+	.  .  .  .  .  ♞  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  ♘
+	♙  ♙  ♙  ♙  ♙  ♙  .  ♙
+	♖  ♘  ♗  ♕  ♔  .  ♜  ♖
 	`
+
 	// and assert king not in check...
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
 		t.Errorf("Failed to assert expected board state, %v (Visible whitespace is ignored, something else differs!", err.Error())
@@ -127,17 +128,18 @@ func TestMoveKnight_should_be_able_to_remove_check(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to move the knight from H3 to G1 to remove check, %v", err.Error())
 	}
-	expectedStateOfBoard = `
-	BR  BN  BB  BQ  BK  BB  ..  .. 
-	bP  bP  bP  bP  bP  bP  ..  bP 
-	..  ..  ..  ..  ..  BN  ..  .. 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	wP  wP  wP  wP  wP  wP  ..  wP 
-	WR  WN  WB  WQ  WK  ..  WN  WR
 
+	expectedStateOfBoard = `
+	♜  ♞  ♝  ♛  ♚  ♝  .  .
+	♟  ♟  ♟  ♟  ♟  ♟  .  ♟
+	.  .  .  .  .  ♞  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	♙  ♙  ♙  ♙  ♙  ♙  .  ♙
+	♖  ♘  ♗  ♕  ♔  .  ♘  ♖
 	`
+
 	// and assert king not in check...
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
 		t.Errorf("Failed to assert expected board state, %v (Visible whitespace is ignored, something else differs!", err.Error())

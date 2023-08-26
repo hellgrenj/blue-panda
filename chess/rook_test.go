@@ -31,15 +31,16 @@ func TestMoveRook_should_be_able_to_move_straight_if_not_blocked(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to move the rook, %v", err.Error())
 	}
+
 	expectedStateOfBoard := `
-	BR  BN  BB  BQ  BK  BB  BN  BR
-	bP  bP  bP  bP  bP  bP  bP  bP
-	..  ..  ..  ..  ..  ..  ..  ..
-	wP  ..  ..  ..  ..  ..  ..  ..
-	WR  ..  ..  ..  ..  ..  ..  ..
-	..  ..  ..  ..  ..  ..  ..  ..
-	..  wP  wP  wP  wP  wP  wP  wP
-	..  WN  WB  WQ  WK  WB  WN  WR
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  ♟  ♟  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	♙  .  .  .  .  .  .  .
+	♖  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  ♙  ♙  ♙  ♙  ♙  ♙  ♙
+	.  ♘  ♗  ♕  ♔  ♗  ♘  ♖
 	`
 
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
@@ -171,15 +172,16 @@ func TestMoveRook_can_move_horizontally(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to move the rook, %v", err.Error())
 	}
+
 	expectedStateOfBoard := `
-	BR  BN  BB  BQ  BK  BB  BN  BR
-	bP  bP  bP  bP  bP  bP  bP  bP
-	..  ..  ..  ..  ..  ..  ..  ..
-	wP  ..  ..  ..  ..  ..  ..  ..
-	..  ..  ..  ..  ..  ..  ..  ..
-	..  ..  ..  ..  WR  ..  ..  ..
-	..  wP  wP  wP  wP  wP  wP  wP
-	..  WN  WB  WQ  WK  WB  WN  WR
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  ♟  ♟  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	♙  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  ♖  .  .  .
+	.  ♙  ♙  ♙  ♙  ♙  ♙  ♙
+	.  ♘  ♗  ♕  ♔  ♗  ♘  ♖
 	`
 
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {

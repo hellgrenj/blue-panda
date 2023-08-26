@@ -72,7 +72,7 @@ func TestKingIsInMate_Cant_escape_by_taking_if_its_moves_into_new_check(t *testi
 
 	expectedStateOfBoard := `
 	♜  .  .  ♚  .  ♝  ♞  ♜
-	♟  ♟  ♟  ♛  ♟  ♟  ♟  ♟
+	♟  ♟  ♟  ♕  ♟  ♟  ♟  ♟
 	.  .  .  .  .  .  .  .
 	.  .  .  .  .  .  .  .
 	.  .  .  .  .  .  .  .

@@ -17,15 +17,16 @@ func TestMovePawn_should_be_able_to_move_A2_A3(t *testing.T) {
 			t.Errorf("Expected error message %v, got %v", expectedErrorMessage, err.Error())
 		}
 	}
+
 	expectedStateOfBoard := `
-	BR  BN  BB  BQ  BK  BB  BN  BR 
-	bP  bP  bP  bP  bP  bP  bP  bP 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	wP  ..  ..  ..  ..  ..  ..  .. 
-	..  wP  wP  wP  wP  wP  wP  wP 
-	WR  WN  WB  WQ  WK  WB  WN  WR
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  ♟  ♟  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	♙  .  .  .  .  .  .  .
+	.  ♙  ♙  ♙  ♙  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖
 	`
 
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
@@ -63,15 +64,16 @@ func TestMovePawn_cant_take_backwards(t *testing.T) {
 	if err == nil {
 		t.Errorf("Expected this move D5-E4 to fail, cannot take backwards")
 	}
+
 	expectedStateOfBoard := `
-	BR  BN  BB  BQ  BK  BB  BN  BR 
-	bP  bP  bP  bP  ..  bP  bP  bP 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	..  ..  ..  wP  ..  ..  ..  .. 
-	..  ..  ..  ..  bP  ..  ..  .. 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	wP  wP  wP  ..  wP  wP  wP  wP 
-	WR  WN  WB  WQ  WK  WB  WN  WR 
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  ♟  .  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	.  .  .  ♙  .  .  .  .
+	.  .  .  .  ♟  .  .  .
+	.  .  .  .  .  .  .  .
+	♙  ♙  ♙  .  ♙  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖
 	`
 
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
@@ -144,17 +146,17 @@ func TestMovePawn_should_be_able_to_move_diagonally_when_taking(t *testing.T) {
 			t.Errorf("Expected error message %v, got %v", expectedErrorMessage, err.Error())
 		}
 	}
-	expectedStateOfBoard := `
-	BR  BN  BB  BQ  BK  BB  BN  BR 
-	bP  ..  bP  bP  bP  bP  bP  bP 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	..  wP  ..  ..  ..  ..  ..  .. 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	..  ..  ..  ..  ..  ..  ..  .. 
-	..  wP  wP  wP  wP  wP  wP  wP 
-	WR  WN  WB  WQ  WK  WB  WN  WR 
-	`
 
+	expectedStateOfBoard := `
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  .  ♟  ♟  ♟  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	.  ♙  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  ♙  ♙  ♙  ♙  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖
+	`
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
 		t.Errorf("Failed to assert expected board state, %v (Visible whitespace is ignored, something else differs!", err.Error())
 	}

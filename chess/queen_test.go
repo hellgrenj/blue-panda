@@ -53,16 +53,15 @@ func TestMoveQueen(t *testing.T) {
 	}
 
 	expectedStateOfBoard := `
-	BR  BN  BB  BQ  BK  BB  BN  BR
-	bP  bP  bP  bP  bP  bP  bP  bP
-	..  ..  ..  ..  ..  ..  WQ  ..
-	..  ..  ..  ..  ..  ..  ..  ..
-	..  ..  ..  ..  wP  ..  ..  ..
-	..  ..  ..  ..  ..  ..  ..  ..
-	wP  wP  wP  wP  ..  wP  wP  wP
-	WR  WN  WB  ..  WK  WB  WN  WR
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  ♟  ♟  ♟  ♟  ♟
+	.  .  .  .  .  .  ♕  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  ♙  .  .  .
+	.  .  .  .  .  .  .  .
+	♙  ♙  ♙  ♙  .  ♙  ♙  ♙
+	♖  ♘  ♗  .  ♔  ♗  ♘  ♖
 	`
-
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
 		t.Errorf("Failed to assert expected board state, %v (Visible whitespace is ignored, something else differs!", err.Error())
 	}

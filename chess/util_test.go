@@ -40,7 +40,7 @@ func sPrintStateOfBoard(b *Board) string {
 		if occupied {
 			state.WriteString(fmt.Sprintf(" %v ", piece.GetAbbreveation()))
 		} else {
-			state.WriteString(" .. ")
+			state.WriteString(" . ")
 		}
 	}
 	state.WriteString("\n")
