@@ -30,7 +30,7 @@ const (
 
 type MoveResult struct {
 	Action MoveResultAction
-	Piece  *Piece // if take.. so we can calculate and compare value of moves
+	Piece  *Piece // taken piece so we can calculate and compare value of moves
 }
 
 func newBoard() *Board {
@@ -241,7 +241,7 @@ func (b *Board) kingIsInCheck(colour Colour) (bool, []Piece) {
 	}
 	return isCheck, enemies
 }
-func (b *Board) checkPathStraightLeft(targetColumn string, targetRow int, p *Piece) ([]Square, error) {
+func (b *Board) checkPathForOccupiedSquaresStraightLeft(targetColumn string, targetRow int, p *Piece) ([]Square, error) {
 	// starting from current position, check if any pieces in the way
 	currentColumnIndex := b.getColumnIndex(p.CurrentSquare.Column)
 	columnIndex := b.getColumnIndex(targetColumn)
@@ -255,7 +255,28 @@ func (b *Board) checkPathStraightLeft(targetColumn string, targetRow int, p *Pie
 	}
 	return squaresInBetween, nil
 }
-func (b *Board) checkPathStraigthRight(targetColumn string, targetRow int, p *Piece) ([]Square, error) {
+func (b *Board) checkPathForSquaresUnderAttackStraightLeft(targetColumn string, targetRow int, p *Piece) error {
+	// starting from current position, check if any square is under attack
+	currentColumnIndex := b.getColumnIndex(p.CurrentSquare.Column)
+	columnIndex := b.getColumnIndex(targetColumn)
+	for i := currentColumnIndex - 1; i > columnIndex; i-- { // always at least one square between
+		var activeEnemies []Piece
+		if p.Colour == White {
+			activeEnemies = b.BlackPieces
+		} else {
+			activeEnemies = b.WhitePieces
+		}
+		for _, enemy := range activeEnemies {
+			if enemy.InPlay {
+				if enemy.couldMoveTo(b.columns[i], targetRow, b) {
+					return fmt.Errorf("enemy %v can go to %v%v", p.Type, targetColumn, targetRow)
+				}
+			}
+		}
+	}
+	return nil
+}
+func (b *Board) checkPathForOccupiedSquaresStraigthRight(targetColumn string, targetRow int, p *Piece) ([]Square, error) {
 	// starting from current position, check if any pieces in the way
 	currentColumnIndex := b.getColumnIndex(p.CurrentSquare.Column)
 	columnIndex := b.getColumnIndex(targetColumn)
@@ -269,7 +290,28 @@ func (b *Board) checkPathStraigthRight(targetColumn string, targetRow int, p *Pi
 	}
 	return squaresInBetween, nil
 }
-func (b *Board) checkPathStraightDown(targetColumn string, targetRow int, p *Piece) ([]Square, error) {
+func (b *Board) checkPathForSquaresUnderAttackStraightRight(targetColumn string, targetRow int, p *Piece) error {
+	// starting from current position, check if any square is under attack
+	currentColumnIndex := b.getColumnIndex(p.CurrentSquare.Column)
+	columnIndex := b.getColumnIndex(targetColumn)
+	for i := currentColumnIndex + 1; i < columnIndex; i++ { // always at least one square between
+		var activeEnemies []Piece
+		if p.Colour == White {
+			activeEnemies = b.BlackPieces
+		} else {
+			activeEnemies = b.WhitePieces
+		}
+		for _, enemy := range activeEnemies {
+			if enemy.InPlay {
+				if enemy.couldMoveTo(b.columns[i], targetRow, b) {
+					return fmt.Errorf("enemy %v can go to %v%v", p.Type, targetColumn, targetRow)
+				}
+			}
+		}
+	}
+	return nil
+}
+func (b *Board) checkPathForOccupiedSquaresStraightDown(targetColumn string, targetRow int, p *Piece) ([]Square, error) {
 	// starting from current position, check if any pieces in the way
 	var squaresInBetween []Square
 	for i := p.CurrentSquare.Row - 1; i > targetRow; i-- { // always at least one square between
@@ -281,7 +323,7 @@ func (b *Board) checkPathStraightDown(targetColumn string, targetRow int, p *Pie
 	}
 	return squaresInBetween, nil
 }
-func (b *Board) checkPathStraightUp(targetColumn string, targetRow int, p *Piece) ([]Square, error) {
+func (b *Board) checkPathForOccupiedSquaresStraightUp(targetColumn string, targetRow int, p *Piece) ([]Square, error) {
 	// starting from current position, check if any pieces in the way
 	var squaresInBetween []Square
 	for i := p.CurrentSquare.Row + 1; i < targetRow; i++ { // always at least one square between
@@ -293,7 +335,7 @@ func (b *Board) checkPathStraightUp(targetColumn string, targetRow int, p *Piece
 	}
 	return squaresInBetween, nil
 }
-func (b *Board) checkPathUpRight(targetColumn string, targetRow int, p *Piece) ([]Square, error) {
+func (b *Board) checkPathForOccupiedSquaresUpRight(targetColumn string, targetRow int, p *Piece) ([]Square, error) {
 	// starting from TARGET position moving backwards, check if any pieces in the way
 	currentColumnIndex := b.getColumnIndex(p.CurrentSquare.Column)
 	columnIndex := b.getColumnIndex(targetColumn)
@@ -313,7 +355,7 @@ func (b *Board) checkPathUpRight(targetColumn string, targetRow int, p *Piece) (
 	}
 	return squaresInBetween, nil
 }
-func (b *Board) checkPathDownRight(targetColumn string, targetRow int, p *Piece) ([]Square, error) {
+func (b *Board) checkPathForOccupiedSquaresDownRight(targetColumn string, targetRow int, p *Piece) ([]Square, error) {
 	// starting from TARGET position moving backwards, check if any pieces in the way
 	currentColumnIndex := b.getColumnIndex(p.CurrentSquare.Column)
 	columnIndex := b.getColumnIndex(targetColumn)
@@ -333,7 +375,7 @@ func (b *Board) checkPathDownRight(targetColumn string, targetRow int, p *Piece)
 	}
 	return squaresInBetween, nil
 }
-func (b *Board) checkPathUpLeft(targetColumn string, targetRow int, p *Piece) ([]Square, error) {
+func (b *Board) checkPathForOccupiedSquaresUpLeft(targetColumn string, targetRow int, p *Piece) ([]Square, error) {
 	// starting from TARGET position moving backwards, check if any pieces in the way
 	currentColumnIndex := b.getColumnIndex(p.CurrentSquare.Column)
 	columnIndex := b.getColumnIndex(targetColumn)
@@ -354,7 +396,7 @@ func (b *Board) checkPathUpLeft(targetColumn string, targetRow int, p *Piece) ([
 	}
 	return squaresInBetween, nil
 }
-func (b *Board) checkPathDownLeft(targetColumn string, targetRow int, p *Piece) ([]Square, error) {
+func (b *Board) checkPathForOccupiedSquaresDownLeft(targetColumn string, targetRow int, p *Piece) ([]Square, error) {
 	// starting from TARGET position moving backwards, check if any pieces in the way
 	currentColumnIndex := b.getColumnIndex(p.CurrentSquare.Column)
 	columnIndex := b.getColumnIndex(targetColumn)
@@ -417,7 +459,9 @@ func (b *Board) getColumnIndex(targetColumn string) int {
 	}
 	return columnValue
 }
-
+func (b *Board) getColumnStringByIndex(columnIndex int) string {
+	return b.columns[columnIndex]
+}
 func (board *Board) placePiecesOnBoard() {
 
 	isAlive := true

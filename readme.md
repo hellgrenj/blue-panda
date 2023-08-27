@@ -26,8 +26,8 @@ Including:
 * Stalemate detection
 * Pawn promotion to Queen  
 * Saves history of latest game in ./history
+* Castling
 
-Left to implement:  
-* Castling  
+Left to implement:    
 * En passant  
 

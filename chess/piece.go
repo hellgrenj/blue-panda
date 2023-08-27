@@ -235,18 +235,18 @@ func (p *Piece) moveJumpsOverPieces(targetColumn string, targetRow int, b *Board
 	currentColumnIndex := b.getColumnIndex(p.CurrentSquare.Column)
 	targetColumnIndex := b.getColumnIndex(targetColumn)
 	if p.moveIsStraight(targetColumn, targetRow, b) {
-		if currentColumnIndex > targetColumnIndex {
-			return b.checkPathStraightLeft(targetColumn, targetRow, p)
-		} else {
-			if squaresInBetween, foundPieceOnPathError := b.checkPathStraigthRight(targetColumn, targetRow, p); foundPieceOnPathError != nil {
-				return squaresInBetween, foundPieceOnPathError
+		if currentColumnIndex > targetColumnIndex { // if moving left
+			return b.checkPathForOccupiedSquaresStraightLeft(targetColumn, targetRow, p)
+		} else if currentColumnIndex < targetColumnIndex { // if moving right
+			return b.checkPathForOccupiedSquaresStraigthRight(targetColumn, targetRow, p)
+		} else { // if moving up or down
+			if p.CurrentSquare.Row > targetRow { // if moving down
+				return b.checkPathForOccupiedSquaresStraightDown(targetColumn, targetRow, p)
+			} else { // if moving up
+				return b.checkPathForOccupiedSquaresStraightUp(targetColumn, targetRow, p)
 			}
 		}
-		if p.CurrentSquare.Row > targetRow {
-			return b.checkPathStraightDown(targetColumn, targetRow, p)
-		} else {
-			return b.checkPathStraightUp(targetColumn, targetRow, p)
-		}
+
 	} else if p.moveIsDiagonal(targetColumn, targetRow, b) {
 		/*
 			8
@@ -260,17 +260,17 @@ func (p *Piece) moveJumpsOverPieces(targetColumn string, targetRow int, b *Board
 		*/
 		if targetColumnIndex > currentColumnIndex { // RIGHT
 			if targetRow > p.CurrentSquare.Row { // UP
-				return b.checkPathUpRight(targetColumn, targetRow, p)
+				return b.checkPathForOccupiedSquaresUpRight(targetColumn, targetRow, p)
 
 			} else { // DOWN
-				return b.checkPathDownRight(targetColumn, targetRow, p)
+				return b.checkPathForOccupiedSquaresDownRight(targetColumn, targetRow, p)
 			}
 		} else { // LEFT
 			if targetRow > p.CurrentSquare.Row { // UP
-				return b.checkPathUpLeft(targetColumn, targetRow, p)
+				return b.checkPathForOccupiedSquaresUpLeft(targetColumn, targetRow, p)
 
 			} else { //  DOWN
-				return b.checkPathDownLeft(targetColumn, targetRow, p)
+				return b.checkPathForOccupiedSquaresDownLeft(targetColumn, targetRow, p)
 			}
 		}
 	}

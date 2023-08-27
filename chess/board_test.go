@@ -175,6 +175,92 @@ func TestKingIsMate_is_false_if_queen_can_block(t *testing.T) {
 		return
 	}
 }
+
+func TestKingIsMate_is_false_if_queen_can_block_v2(t *testing.T) {
+	board := newBoard()
+
+	// CREATE START SCENARIO (Discovered bug when bot playing bot)
+	// 	.  ♕  .  .  ♚  .  ♞  .
+	// 	.  .  .  ♛  ♟  ♟  .  .
+	// 	♟  .  ♟  .  .  .  ♟  ♟
+	// 	.  .  .  .  .  .  .  .
+	// 	.  .  .  .  .  .  .  .
+	// 	.  ♙  .  .  .  .  .  ♙
+	// 	♙  ♝  .  ♙  ♙  ♙  .  ♙
+	// 	.  ♘  .  .  ♔  ♗  .  ♖
+	//    White's captured pieces: ♜  ♞  ♝  ♜  ♟  ♟
+	//    Black's captured pieces: ♙  ♖  ♗  ♘
+	//    White wins! (Black is in mate)
+
+	// remove some pieces
+	piecesToRemove := []string{"A8", "B8", "F8", "H8", "B7", "D7", "C2", "A1", "C1", "G1"}
+	for _, square := range piecesToRemove {
+		column := square[0:1]
+		row := int(square[1] - '0') //from ASCII to int
+		_, piece := board.GetPieceAtSquare(column, row)
+		piece.InPlay = false // simulate taken
+	}
+
+	// teleport some pieces
+	// white b2 pawn to b3
+	_, wp := board.GetPieceAtSquare("B", 2)
+	wp.CurrentSquare = Square{Column: "B", Row: 3}
+
+	// black bishop to b2
+	_, bB := board.GetPieceAtSquare("C", 8)
+	bB.CurrentSquare = Square{"B", 2}
+
+	// black queen to d7
+	_, bQ := board.GetPieceAtSquare("D", 8)
+	bQ.CurrentSquare = Square{"D", 7}
+
+	// white queen to B8
+	_, wQ := board.GetPieceAtSquare("D", 1)
+	wQ.CurrentSquare = Square{"B", 8}
+
+	// black pawn to A6
+	_, bp := board.GetPieceAtSquare("A", 7)
+	bp.CurrentSquare = Square{"A", 6}
+
+	// black pawn to C6
+	_, bp2 := board.GetPieceAtSquare("C", 7)
+	bp2.CurrentSquare = Square{"C", 6}
+
+	// black pawn G7 to G6
+	_, bp3 := board.GetPieceAtSquare("G", 7)
+	bp3.CurrentSquare = Square{"G", 6}
+
+	// black pawn H7 to H6
+	_, bp4 := board.GetPieceAtSquare("H", 7)
+	bp4.CurrentSquare = Square{"H", 6}
+
+	// white pawn G2 H3
+	_, wp2 := board.GetPieceAtSquare("G", 2)
+	wp2.CurrentSquare = Square{"H", 3}
+
+	expectedStateOfBoard := `
+	.  ♕  .  .  ♚  .  ♞  .
+	.  .  .  ♛  ♟  ♟  .  .
+	♟  .  ♟  .  .  .  ♟  ♟
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  ♙  .  .  .  .  .  ♙
+	♙  ♝  .  ♙  ♙  ♙  .  ♙
+	.  ♘  .  .  ♔  ♗  .  ♖
+	`
+
+	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
+		t.Errorf("Failed to assert expected board state, %v (Visible whitespace is ignored, something else differs!", err.Error())
+	}
+
+	// CHECK IF BLACK KING IS IN MATE
+	kingIsInMate := board.kingIsInMate(Black)
+	if kingIsInMate {
+		t.Errorf("Expected black king to NOT be in mate, queen on d7 can block by moving to d8")
+		return
+	}
+}
+
 func TestKingIsInMate_returns_false_if_king_can_run(t *testing.T) {
 	board := newBoard()
 	// CREATE START SCENARIO (NOT mate but check)

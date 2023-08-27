@@ -1,6 +1,8 @@
 package chess
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func moveKing(targetColumn string, targetRow int, b *Board, p *Piece, dryRun bool) (*MoveResult, error) {
 	if p.Type != king {
@@ -13,11 +15,21 @@ func moveKing(targetColumn string, targetRow int, b *Board, p *Piece, dryRun boo
 	currentColumnValue := b.getColumnValue(p.CurrentSquare.Column)
 	targetColumnValue := b.getColumnValue(targetColumn)
 
+	// check if castling attempt for either black or white
+	if targetRow == p.CurrentSquare.Row && targetColumnValue == currentColumnValue+2 ||
+		targetRow == p.CurrentSquare.Row && targetColumnValue == currentColumnValue-2 {
+		if err := p.tryCastling(targetColumn, targetRow, b, dryRun); err == nil {
+			return &MoveResult{Action: GoTo, Piece: nil}, nil
+		} else {
+			return nil, fmt.Errorf("castling not allowed, err: %v", err)
+		}
+	}
+
 	if targetColumnValue > currentColumnValue+1 ||
 		targetColumnValue < currentColumnValue-1 ||
 		targetRow > p.CurrentSquare.Row+1 ||
 		targetRow < p.CurrentSquare.Row-1 {
-		return nil, fmt.Errorf("king cant move to square %v%v, can only move one square in any direction", targetColumn, targetRow)
+		return nil, fmt.Errorf("king cant move to square %v%v, can only move one square in any direction, except when castling", targetColumn, targetRow)
 	}
 
 	enemyAtTargetSquare, enemyPiece := b.targetSquareOccupiedByEnemy(targetColumn, targetRow, p)
@@ -39,6 +51,119 @@ func moveKing(targetColumn string, targetRow int, b *Board, p *Piece, dryRun boo
 		}
 	}
 
+}
+
+type castleSide int64
+
+const (
+	kingside castleSide = iota
+	queenside
+	noCastle
+)
+
+func (king *Piece) tryCastling(targetColumn string, targetRow int, b *Board, dryRun bool) error {
+	chosenRook, castleSide, err := selectRookAndSideForCastling(king, b, targetColumn)
+	if err != nil {
+		return err
+	}
+
+	// check if king or rook has previously moved
+	if chosenRook.hasMoved || king.hasMoved {
+		return fmt.Errorf("king or rook has previously moved")
+	}
+	// the king can not jump over pieces nor castle through check
+	// (into check is covered by MoveIsLegal in main func MoveKing)
+	if castleSide == kingside {
+		_, err := b.checkPathForOccupiedSquaresStraigthRight(chosenRook.CurrentSquare.Column, chosenRook.CurrentSquare.Row, king)
+		if err != nil {
+			return fmt.Errorf("pieces between king and rook")
+		}
+		err = b.checkPathForSquaresUnderAttackStraightRight(chosenRook.CurrentSquare.Column, chosenRook.CurrentSquare.Row, king)
+		if err != nil {
+			return fmt.Errorf("king passes through a square that is attacked by an enemy piece")
+		}
+
+	} else { // check queenside castling
+		_, err := b.checkPathForOccupiedSquaresStraightLeft(chosenRook.CurrentSquare.Column, chosenRook.CurrentSquare.Row, king)
+		if err != nil {
+			return fmt.Errorf("pieces between king and rook")
+		}
+		err = b.checkPathForSquaresUnderAttackStraightLeft(chosenRook.CurrentSquare.Column, chosenRook.CurrentSquare.Row, king)
+		if err != nil {
+			return fmt.Errorf("king passes through a square that is attacked by an enemy piece")
+		}
+	}
+	// the king is not currently in check
+	if isCheck, _ := b.kingIsInCheck(king.Colour); isCheck {
+		return fmt.Errorf("king is in check")
+	}
+
+	// move king two squares towards rook (kingside or queenside)
+	if !dryRun {
+		king.goTo(targetColumn, targetRow, b)
+	}
+	// move rook to other side of king, directly next to it on the opposite side
+	if castleSide == kingside { // castle kingside
+		if !dryRun {
+			// move rook to the left of the king
+			chosenRook.goTo(b.getColumnStringByIndex(b.getColumnIndex(king.CurrentSquare.Column)-1), king.CurrentSquare.Row, b)
+		}
+	} else { // castle queenside
+		if !dryRun {
+			// move rook to the right of the king
+			chosenRook.goTo(b.getColumnStringByIndex(b.getColumnIndex(king.CurrentSquare.Column)+1), king.CurrentSquare.Row, b)
+		}
+	}
+	return nil
+}
+
+func selectRookAndSideForCastling(k *Piece, b *Board, targetColumn string) (*Piece, castleSide, error) {
+	if k.Type != king {
+		return nil, noCastle, fmt.Errorf("Piece is not a King, cant select a rook and side for castling")
+	}
+	var kingSideRook *Piece
+	var kingSideRookFound bool
+	var queenSideRook *Piece
+	var queenSideRookFound bool
+
+	if k.Colour == White {
+		kingSideRookFound, kingSideRook = b.GetPieceAtSquare("H", 1)
+		queenSideRookFound, queenSideRook = b.GetPieceAtSquare("A", 1)
+	} else {
+		kingSideRookFound, kingSideRook = b.GetPieceAtSquare("H", 8)
+		queenSideRookFound, queenSideRook = b.GetPieceAtSquare("A", 8)
+	}
+
+	targetColumnValue := b.getColumnValue(targetColumn)
+	kingSideRookColumn := 8  // regardless of color and if it exists
+	queenSideRookColumn := 1 // regardless of color and if it exists
+	distanceToKingsideRook := kingSideRookColumn - targetColumnValue
+	distanceToQueensideRook := queenSideRookColumn - targetColumnValue
+	var chosenRook *Piece
+
+	// math absolute value
+	if distanceToKingsideRook < 0 {
+		distanceToKingsideRook = distanceToKingsideRook * -1
+	}
+	if distanceToQueensideRook < 0 {
+		distanceToQueensideRook = distanceToQueensideRook * -1
+	}
+
+	var castleSide castleSide
+	if distanceToKingsideRook < distanceToQueensideRook {
+		castleSide = kingside
+		if !kingSideRookFound {
+			return nil, noCastle, fmt.Errorf("no rook found on kingside")
+		}
+		chosenRook = kingSideRook
+	} else {
+		castleSide = queenside
+		if !queenSideRookFound {
+			return nil, noCastle, fmt.Errorf("no rook found on queenside")
+		}
+		chosenRook = queenSideRook
+	}
+	return chosenRook, castleSide, nil
 }
 
 func (p *Piece) kingTryRun(b *Board) error {
@@ -131,6 +256,16 @@ func (p *Piece) getValidKingMoves(b *Board) map[Move]*MoveResult {
 	possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
 	// left
 	columnIndex = b.getColumnIndex(p.CurrentSquare.Column) - 1
+	row = p.CurrentSquare.Row
+	possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+
+	// castling queenside
+	columnIndex = b.getColumnIndex(p.CurrentSquare.Column) - 2
+	row = p.CurrentSquare.Row
+	possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+
+	// castling kingside
+	columnIndex = b.getColumnIndex(p.CurrentSquare.Column) + 2
 	row = p.CurrentSquare.Row
 	possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
 
