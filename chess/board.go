@@ -93,43 +93,34 @@ func (b *Board) isStaleMate(colour Colour) bool {
 }
 func (b *Board) kingIsInMate(colour Colour) bool {
 	king := b.getKing(colour)
+
 	isCheck, enemies := b.kingIsInCheck(colour)
 	if !isCheck {
 		return false // king is not in check, so not in mate
 	}
-	// check if more than one piece is checking the king
-	if len(enemies) > 1 {
-		// check if king can move to a square that would remove the check
-		cantEscapeErr := king.kingTryRun(b)
-		if cantEscapeErr == nil {
-			return false // king can run, so not in mate
-		}
-		if couldAnyPieceBlockCheck(king, enemies, colour, b) {
-			return false // a friendely piece can block the check (one or multiple threathening pieces) = no check mate
-		}
-		return true // king can't run and no piece can block the check = check mate
 
-	} else { // king is in check by ONE piece
-		// check if king can move to a square that would remove the check
-		cantEscapeErr := king.kingTryRun(b)
-		if cantEscapeErr == nil {
-			return false // king can run = no check mate
-		}
-		// check if any friendly piece can take the threathening piece
+	cantEscapeErr := king.kingTryRun(b)
+	if cantEscapeErr == nil {
+		return false // king can run, so not in mate
+	}
+
+	if couldAnyPieceBlockCheck(king, enemies, colour, b) {
+		return false // a friendly piece can block the check (one or multiple threathening pieces) = no check mate
+	}
+
+	if len(enemies) == 1 { // if only one piece is threathening the king, then it might be possible to take it
+
 		if colour == White {
 			if CouldAnyTakeAt(b.WhitePieces, enemies[0].CurrentSquare.Column, enemies[0].CurrentSquare.Row, b) {
-				return false // a friendely piece can take the treathening piece = no check mate
+				return false // a friendly piece can take the ONE treathening piece = no check mate
 			}
 		} else {
 			if CouldAnyTakeAt(b.BlackPieces, enemies[0].CurrentSquare.Column, enemies[0].CurrentSquare.Row, b) {
-				return false // a friendely piece can take the treathening piece = no check mate
+				return false // a friendly piece can take the ONE treathening piece = no check mate
 			}
 		}
-		// check if any friendly piece can block the check
-		if couldAnyPieceBlockCheck(king, enemies, colour, b) {
-			return false // a friendely piece can block the check = no check mate
-		}
 	}
+
 	return true // king cant run, no piece can take the ONE threathening piece and no piece can block the check = check mate
 }
 
