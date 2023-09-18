@@ -29,20 +29,21 @@ func Menu() {
 	fmt.Println("4. 100 games of Computer vs Computer")
 	reader := bufio.NewReader(os.Stdin)
 	gameType, _ := reader.ReadString('\n')
+	gameType = strings.TrimSpace(gameType)
 	switch gameType {
-	case "1\n":
+	case "1":
 		whitePlayer := &Player{Colour: chess.White}
 		blackPlayer := &Player{Colour: chess.Black}
 		startGame(whitePlayer, blackPlayer)
-	case "2\n":
+	case "2":
 		whitePlayer := &Player{Colour: chess.White}
 		blackPlayer := NewSimpleBot(chess.Black, 1500)
 		startGame(whitePlayer, blackPlayer)
-	case "3\n":
+	case "3":
 		whitePlayer := NewSimpleBot(chess.White, 200)
 		blackPlayer := NewSimpleBot(chess.Black, 200)
 		startGame(whitePlayer, blackPlayer)
-	case "4\n":
+	case "4":
 		whitePlayer := NewSimpleBot(chess.White, 0)
 		blackPlayer := NewSimpleBot(chess.Black, 0)
 		results := make(map[chess.Result]int)
