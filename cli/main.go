@@ -109,7 +109,6 @@ func (v *CLIPrinter) VisualizeState(b *chess.Board) {
 }
 
 func clearScreen() {
-
 	if runtime.GOOS == "windows" {
 		cmd := exec.Command("cmd", "/c", "cls")
 		cmd.Stdout = os.Stdout
