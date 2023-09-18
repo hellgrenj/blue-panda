@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"os/exec"
 	"os/signal"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 	"syscall"
@@ -102,9 +104,19 @@ type CLIPrinter struct {
 }
 
 func (v *CLIPrinter) VisualizeState(b *chess.Board) {
-	// clear terminal screen
-	fmt.Print("\033[H\033[2J")
+	clearScreen()
 	Print(b)
+}
+
+func clearScreen() {
+
+	if runtime.GOOS == "windows" {
+		cmd := exec.Command("cmd", "/c", "cls")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	} else {
+		fmt.Print("\033[H\033[2J")
+	}
 }
 
 type Player struct {
@@ -115,6 +127,7 @@ func (p *Player) PickMove(g *chess.Game) (*chess.Move, error) {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Printf("\n%v to move: ", g.NextToMove)
 	move, _ := reader.ReadString('\n')
+	move = strings.TrimSpace(move)
 
 	// input validation
 	match, _ := regexp.MatchString("[A-Ha-h][1-8] [A-Ha-h][1-8]", move)
