@@ -25,9 +25,11 @@ Including:
 * Checkmate detection
 * Stalemate detection
 * Pawn promotion to Queen  
-* Saves history of latest game in ./history
 * Castling
-
-Left to implement:    
 * En passant  
+
+
+The history of the latest game is saved in ./history
+
+
 

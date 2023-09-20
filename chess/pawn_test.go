@@ -99,6 +99,9 @@ func TestMovePawn_should_NOT_be_able_to_move_A2_A7(t *testing.T) {
 func TestMovePawn_should_NOT_able_to_move_diagonally_if_not_when_taking(t *testing.T) {
 	defer quiet()()
 	board := newBoard()
+	board.blacksLastMove = LastMove{Piece: &Piece{Type: king, Colour: Black, CurrentSquare: Square{Column: "D", Row: 8}},
+		Move: &Move{From: Square{Column: "E", Row: 8}, To: Square{Column: "D", Row: 8}}}
+
 	_, a2Pawn := board.GetPieceAtSquare("A", 2)
 	_, err := a2Pawn.Move("B", 3, board, false)
 	if err == nil {
@@ -107,54 +110,431 @@ func TestMovePawn_should_NOT_able_to_move_diagonally_if_not_when_taking(t *testi
 	if err != nil {
 
 		expectedErrorMessage := "piece &{Pawn {A 2} White true false} cant move to B 3, can only move diagonally when taking"
-		if strings.TrimSpace(err.Error()) != expectedErrorMessage {
-			t.Errorf("Expected error message %v, got %v", expectedErrorMessage, err.Error())
+		if !strings.Contains(err.Error(), expectedErrorMessage) {
+			t.Errorf("Expected error message to contain %v, got %v", expectedErrorMessage, err.Error())
 		}
 	}
 }
-func TestMovePawn_should_be_able_to_move_diagonally_when_taking(t *testing.T) {
+
+func TestMovePawn_white_can_do_en_passant(t *testing.T) {
 	defer quiet()()
 	board := newBoard()
 
-	// CREATE START SCENARIO (white pawn takes black pawn)
-	// bR  bN  bB  bQ  bK  bB  bN  bR
-	// bp  ..  bp  bp  bp  bp  bp  bp
-	// ..  ..  ..  ..  ..  ..  ..  ..
-	// ..  bp  ..  ..  ..  ..  ..  ..
-	// wp  ..  ..  ..  ..  ..  ..  ..
-	// ..  ..  ..  ..  ..  ..  ..  ..
-	// ..  wp  wp  wp  wp  wp  wp  wp
-	// wR  wN  wB  wQ  wK  wB  wN  wR
-
-	// wp from A2 to A4
-	whiteMove1 := Move{Square{Column: "A", Row: 2}, Square{Column: "A", Row: 4}}
-	// then bp from B7 to B5
-	blackMove1 := Move{Square{Column: "B", Row: 7}, Square{Column: "B", Row: 5}}
-	moves := []Move{whiteMove1, blackMove1}
+	whiteMove1 := Move{Square{Column: "E", Row: 2}, Square{Column: "E", Row: 4}}
+	whiteMove2 := Move{Square{Column: "E", Row: 4}, Square{Column: "E", Row: 5}}
+	blackMove1 := Move{Square{Column: "D", Row: 7}, Square{Column: "D", Row: 5}}
+	moves := []Move{whiteMove1, whiteMove2, blackMove1}
 	scenarioPrepError := prepScenario(moves, board)
 
 	if scenarioPrepError != nil {
 		t.Errorf("Failed to prep the board, %v", scenarioPrepError.Error())
 		return
 	}
-	_, a4Pawn := board.GetPieceAtSquare("A", 4)
-	_, err := a4Pawn.Move("B", 5, board, false)
+	expectedInitStateOfBoard := `
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  .  ♟  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	.  .  .  ♟  ♙  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	♙  ♙  ♙  ♙  .  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖
+	`
+	if err := assertExpectedBoardState(expectedInitStateOfBoard, board); err != nil {
+		t.Errorf("Failed to assert expected init board state, %v (Visible whitespace is ignored, something else differs!", err.Error())
+	}
+
+	_, e5pawn := board.GetPieceAtSquare("E", 5)
+	_, err := e5pawn.Move("D", 6, board, false)
 	if err != nil {
-		t.Errorf("Expected pawn to move to B3 successfully")
-		expectedErrorMessage := "square B 3 is occupied by &{Pawn bp {B 3} Black true false}"
-		if strings.TrimSpace(err.Error()) != expectedErrorMessage {
-			t.Errorf("Expected error message %v, got %v", expectedErrorMessage, err.Error())
-		}
+
+		t.Errorf("Expected pawn to use en-passan to take black pawn at d5 successfully by moving to d6. error was %v", err.Error())
+
 	}
 
 	expectedStateOfBoard := `
 	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
-	♟  .  ♟  ♟  ♟  ♟  ♟  ♟
+	♟  ♟  ♟  .  ♟  ♟  ♟  ♟
+	.  .  .  ♙  .  .  .  .
 	.  .  .  .  .  .  .  .
-	.  ♙  .  .  .  .  .  .
 	.  .  .  .  .  .  .  .
 	.  .  .  .  .  .  .  .
-	.  ♙  ♙  ♙  ♙  ♙  ♙  ♙
+	♙  ♙  ♙  ♙  .  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖
+	`
+	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
+		t.Errorf("Failed to assert expected board state, %v (Visible whitespace is ignored, something else differs!", err.Error())
+	}
+}
+func TestMovePawn_black_can_do_en_passant(t *testing.T) {
+	defer quiet()()
+	board := newBoard()
+
+	whiteMove1 := Move{Square{Column: "A", Row: 2}, Square{Column: "A", Row: 3}}
+	blackMove1 := Move{Square{Column: "D", Row: 7}, Square{Column: "D", Row: 5}}
+	blackMove2 := Move{Square{Column: "D", Row: 5}, Square{Column: "D", Row: 4}}
+	whiteMove2 := Move{Square{Column: "E", Row: 2}, Square{Column: "E", Row: 4}}
+
+	moves := []Move{whiteMove1, blackMove1, blackMove2, whiteMove2}
+	scenarioPrepError := prepScenario(moves, board)
+
+	if scenarioPrepError != nil {
+		t.Errorf("Failed to prep the board, %v", scenarioPrepError.Error())
+		return
+	}
+	expectedInitStateOfBoard := `
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  .  ♟  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  ♟  ♙  .  .  .
+	♙  .  .  .  .  .  .  .
+	.  ♙  ♙  ♙  .  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖
+	`
+	if err := assertExpectedBoardState(expectedInitStateOfBoard, board); err != nil {
+		t.Errorf("Failed to assert expected init board state, %v (Visible whitespace is ignored, something else differs!", err.Error())
+	}
+
+	_, d4pawn := board.GetPieceAtSquare("D", 4)
+	_, err := d4pawn.Move("E", 3, board, false)
+	if err != nil {
+
+		t.Errorf("Expected pawn to use en-passan to take white pawn at e4 successfully by moving to e3. error was %v", err.Error())
+
+	}
+
+	expectedStateOfBoard := `
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  .  ♟  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	♙  .  .  .  ♟  .  .  .
+	.  ♙  ♙  ♙  .  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖
+	`
+	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
+		t.Errorf("Failed to assert expected board state, %v (Visible whitespace is ignored, something else differs!", err.Error())
+	}
+}
+func TestMovePawn_white_can_do_en_passant_to_the_right(t *testing.T) {
+	defer quiet()()
+	board := newBoard()
+
+	whiteMove1 := Move{Square{Column: "D", Row: 2}, Square{Column: "D", Row: 4}}
+	whiteMove2 := Move{Square{Column: "D", Row: 4}, Square{Column: "D", Row: 5}}
+	blackMove1 := Move{Square{Column: "E", Row: 7}, Square{Column: "E", Row: 5}}
+	moves := []Move{whiteMove1, whiteMove2, blackMove1}
+	scenarioPrepError := prepScenario(moves, board)
+
+	if scenarioPrepError != nil {
+		t.Errorf("Failed to prep the board, %v", scenarioPrepError.Error())
+		return
+	}
+	expectedInitStateOfBoard := `
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  ♟  .  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	.  .  .  ♙  ♟  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	♙  ♙  ♙  .  ♙  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖
+	`
+	if err := assertExpectedBoardState(expectedInitStateOfBoard, board); err != nil {
+		t.Errorf("Failed to assert expected init board state, %v (Visible whitespace is ignored, something else differs!", err.Error())
+	}
+
+	_, e5pawn := board.GetPieceAtSquare("D", 5)
+	_, err := e5pawn.Move("E", 6, board, false)
+	if err != nil {
+
+		t.Errorf("Expected pawn to use en-passan to take black pawn at e5 successfully by moving to e6. error was %v", err.Error())
+
+	}
+
+	expectedStateOfBoard := `
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  ♟  .  ♟  ♟  ♟
+	.  .  .  .  ♙  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	♙  ♙  ♙  .  ♙  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖
+	`
+	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
+		t.Errorf("Failed to assert expected board state, %v (Visible whitespace is ignored, something else differs!", err.Error())
+	}
+}
+func TestMovePawn_black_can_do_en_passant_to_the_left(t *testing.T) {
+	defer quiet()()
+	board := newBoard()
+
+	whiteMove1 := Move{Square{Column: "A", Row: 2}, Square{Column: "A", Row: 3}}
+	blackMove1 := Move{Square{Column: "E", Row: 7}, Square{Column: "E", Row: 5}}
+	blackMove2 := Move{Square{Column: "E", Row: 5}, Square{Column: "E", Row: 4}}
+	whiteMove2 := Move{Square{Column: "D", Row: 2}, Square{Column: "D", Row: 4}}
+
+	moves := []Move{whiteMove1, blackMove1, blackMove2, whiteMove2}
+	scenarioPrepError := prepScenario(moves, board)
+
+	if scenarioPrepError != nil {
+		t.Errorf("Failed to prep the board, %v", scenarioPrepError.Error())
+		return
+	}
+	expectedInitStateOfBoard := `
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  ♟  .  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  ♙  ♟  .  .  .
+	♙  .  .  .  .  .  .  .
+	.  ♙  ♙  .  ♙  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖
+	`
+	if err := assertExpectedBoardState(expectedInitStateOfBoard, board); err != nil {
+		t.Errorf("Failed to assert expected init board state, %v (Visible whitespace is ignored, something else differs!", err.Error())
+	}
+
+	_, e4pawn := board.GetPieceAtSquare("E", 4)
+	_, err := e4pawn.Move("D", 3, board, false)
+	if err != nil {
+
+		t.Errorf("Expected pawn to use en-passan to take white pawn at d4 successfully by moving to d3. error was %v", err.Error())
+
+	}
+
+	expectedStateOfBoard := `
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  ♟  .  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	♙  .  .  ♟  .  .  .  .
+	.  ♙  ♙  .  ♙  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖
+	`
+	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
+		t.Errorf("Failed to assert expected board state, %v (Visible whitespace is ignored, something else differs!", err.Error())
+	}
+}
+
+func TestMovePawn_white_cant_do_en_passant_if_pawn_not_in_position(t *testing.T) {
+	defer quiet()()
+	board := newBoard()
+
+	whiteMove1 := Move{Square{Column: "E", Row: 2}, Square{Column: "E", Row: 4}}
+	whiteMove2 := Move{Square{Column: "E", Row: 4}, Square{Column: "E", Row: 5}}
+	whiteMove3 := Move{Square{Column: "E", Row: 5}, Square{Column: "E", Row: 6}}
+	blackMove1 := Move{Square{Column: "D", Row: 7}, Square{Column: "D", Row: 5}}
+	moves := []Move{whiteMove1, whiteMove2, whiteMove3, blackMove1}
+	scenarioPrepError := prepScenario(moves, board)
+
+	if scenarioPrepError != nil {
+		t.Errorf("Failed to prep the board, %v", scenarioPrepError.Error())
+		return
+	}
+	expectedInitStateOfBoard := `
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  .  ♟  ♟  ♟  ♟
+	.  .  .  .  ♙  .  .  .
+	.  .  .  ♟  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	♙  ♙  ♙  ♙  .  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖
+	`
+	if err := assertExpectedBoardState(expectedInitStateOfBoard, board); err != nil {
+		t.Errorf("Failed to assert expected init board state, %v (Visible whitespace is ignored, something else differs!", err.Error())
+	}
+
+	_, e4pawn := board.GetPieceAtSquare("E", 6)
+	_, err := e4pawn.Move("D", 7, board, false)
+	if err == nil {
+
+		t.Errorf("Expected an en passant error with message: en passant not possible, reason: pawn not next to oppents pawn on row 5")
+
+	}
+	if !strings.Contains(err.Error(), "en passant not possible, reason: pawn not next to oppents pawn on row 5") {
+		t.Errorf("Expected error to contain 'en passant not possible, reason: pawn not next to oppents pawn on row 5' but it did not, error: %v*", err.Error())
+	}
+
+	expectedStateOfBoard := `
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  .  ♟  ♟  ♟  ♟
+	.  .  .  .  ♙  .  .  .
+	.  .  .  ♟  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	♙  ♙  ♙  ♙  .  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖
+	`
+	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
+		t.Errorf("Failed to assert expected board state, %v (Visible whitespace is ignored, something else differs!", err.Error())
+	}
+}
+func TestMovePawn_black_cant_do_en_passant_if_pawn_not_in_position(t *testing.T) {
+	defer quiet()()
+	board := newBoard()
+
+	whiteMove1 := Move{Square{Column: "A", Row: 2}, Square{Column: "A", Row: 3}}
+	blackMove1 := Move{Square{Column: "D", Row: 7}, Square{Column: "D", Row: 5}}
+	blackMove2 := Move{Square{Column: "D", Row: 5}, Square{Column: "D", Row: 4}}
+	blackMove3 := Move{Square{Column: "D", Row: 4}, Square{Column: "D", Row: 3}}
+	whiteMove2 := Move{Square{Column: "E", Row: 2}, Square{Column: "E", Row: 4}}
+
+	moves := []Move{whiteMove1, blackMove1, blackMove2, blackMove3, whiteMove2}
+	scenarioPrepError := prepScenario(moves, board)
+
+	if scenarioPrepError != nil {
+		t.Errorf("Failed to prep the board, %v", scenarioPrepError.Error())
+		return
+	}
+	expectedInitStateOfBoard := `
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  .  ♟  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  ♙  .  .  .
+	♙  .  .  ♟  .  .  .  .
+	.  ♙  ♙  ♙  .  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖
+	`
+	if err := assertExpectedBoardState(expectedInitStateOfBoard, board); err != nil {
+		t.Errorf("Failed to assert expected init board state, %v (Visible whitespace is ignored, something else differs!", err.Error())
+	}
+
+	_, d3pawn := board.GetPieceAtSquare("D", 3)
+	_, err := d3pawn.Move("E", 2, board, false)
+	if err == nil {
+
+		t.Errorf("Expected an en passant error with message: en passant not possible, reason: pawn not next to oppents pawn on row 3")
+
+	}
+	if !strings.Contains(err.Error(), "en passant not possible, reason: pawn not next to oppents pawn on row 4") {
+		t.Errorf("Expected error to contain 'en passant not possible, reason: pawn not next to oppents pawn on row 4' but it did not, error: %v*", err.Error())
+	}
+
+	expectedStateOfBoard := `
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  .  ♟  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  ♙  .  .  .
+	♙  .  .  ♟  .  .  .  .
+	.  ♙  ♙  ♙  .  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖
+	`
+	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
+		t.Errorf("Failed to assert expected board state, %v (Visible whitespace is ignored, something else differs!", err.Error())
+	}
+}
+func TestMovePawn_white_cant_do_en_passant_if_black_last_move_not_pawn_2_squares(t *testing.T) {
+	defer quiet()()
+	board := newBoard()
+
+	whiteMove1 := Move{Square{Column: "E", Row: 2}, Square{Column: "E", Row: 4}}
+	whiteMove2 := Move{Square{Column: "E", Row: 4}, Square{Column: "E", Row: 5}}
+	blackMove1 := Move{Square{Column: "D", Row: 7}, Square{Column: "D", Row: 5}}
+	blackMove2 := Move{Square{Column: "A", Row: 7}, Square{Column: "A", Row: 6}} // last move not pawn 2 squares
+	moves := []Move{whiteMove1, whiteMove2, blackMove1, blackMove2}
+	scenarioPrepError := prepScenario(moves, board)
+
+	if scenarioPrepError != nil {
+		t.Errorf("Failed to prep the board, %v", scenarioPrepError.Error())
+		return
+	}
+	expectedInitStateOfBoard := `
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	.  ♟  ♟  .  ♟  ♟  ♟  ♟
+	♟  .  .  .  .  .  .  .
+	.  .  .  ♟  ♙  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	♙  ♙  ♙  ♙  .  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖
+	`
+	if err := assertExpectedBoardState(expectedInitStateOfBoard, board); err != nil {
+		t.Errorf("Failed to assert expected init board state, %v (Visible whitespace is ignored, something else differs!", err.Error())
+	}
+
+	_, e5pawn := board.GetPieceAtSquare("E", 5)
+	_, err := e5pawn.Move("D", 6, board, false)
+	if err == nil {
+
+		t.Errorf("Expected an en passant error with message: en passant not possible, reason: oppents last move was not pawn two squares forward")
+
+	}
+	if !strings.Contains(err.Error(), "en passant not possible, reason: oppents last move was not pawn two squares forward") {
+		t.Errorf("Expected error to contain 'en passant not possible, reason: oppents last move was not pawn two squares forward)' but it did not, error: %v*", err.Error())
+	}
+
+	expectedStateOfBoard := `
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	.  ♟  ♟  .  ♟  ♟  ♟  ♟
+	♟  .  .  .  .  .  .  .
+	.  .  .  ♟  ♙  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	♙  ♙  ♙  ♙  .  ♙  ♙  ♙
+	♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖
+	`
+	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {
+		t.Errorf("Failed to assert expected board state, %v (Visible whitespace is ignored, something else differs!", err.Error())
+	}
+}
+func TestMovePawn_black_cant_do_en_passant_if_white_lastmove_not_pawn_2_squares(t *testing.T) {
+	defer quiet()()
+	board := newBoard()
+
+	whiteMove1 := Move{Square{Column: "A", Row: 2}, Square{Column: "A", Row: 3}}
+	blackMove1 := Move{Square{Column: "D", Row: 7}, Square{Column: "D", Row: 5}}
+	blackMove2 := Move{Square{Column: "D", Row: 5}, Square{Column: "D", Row: 4}}
+	whiteMove2 := Move{Square{Column: "E", Row: 2}, Square{Column: "E", Row: 4}}
+	whiteMove3 := Move{Square{Column: "H", Row: 2}, Square{Column: "H", Row: 3}} // last move not pawn 2 squares
+
+	moves := []Move{whiteMove1, blackMove1, blackMove2, whiteMove2, whiteMove3}
+	scenarioPrepError := prepScenario(moves, board)
+
+	if scenarioPrepError != nil {
+		t.Errorf("Failed to prep the board, %v", scenarioPrepError.Error())
+		return
+	}
+	expectedInitStateOfBoard := `
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  .  ♟  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  ♟  ♙  .  .  .
+	♙  .  .  .  .  .  .  ♙
+	.  ♙  ♙  ♙  .  ♙  ♙  .
+	♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖
+	`
+	if err := assertExpectedBoardState(expectedInitStateOfBoard, board); err != nil {
+		t.Errorf("Failed to assert expected init board state, %v (Visible whitespace is ignored, something else differs!", err.Error())
+	}
+
+	_, d4pawn := board.GetPieceAtSquare("D", 4)
+	_, err := d4pawn.Move("E", 3, board, false)
+	if err == nil {
+
+		t.Errorf("Expected an en passant error with message: en passant not possible, reason: oppents last move was not pawn two squares forward")
+
+	}
+	if !strings.Contains(err.Error(), "en passant not possible, reason: oppents last move was not pawn two squares forward") {
+		t.Errorf("Expected error to contain 'en passant not possible, reason: oppents last move was not pawn two squares forward)' but it did not, error: %v*", err.Error())
+	}
+
+	expectedStateOfBoard := `
+	♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
+	♟  ♟  ♟  .  ♟  ♟  ♟  ♟
+	.  .  .  .  .  .  .  .
+	.  .  .  .  .  .  .  .
+	.  .  .  ♟  ♙  .  .  .
+	♙  .  .  .  .  .  .  ♙
+	.  ♙  ♙  ♙  .  ♙  ♙  .
 	♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖
 	`
 	if err := assertExpectedBoardState(expectedStateOfBoard, board); err != nil {

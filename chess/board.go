@@ -11,11 +11,17 @@ type Square struct {
 	Row    int
 }
 
+type LastMove struct {
+	Piece *Piece
+	Move  *Move
+}
 type Board struct {
-	Squares     [64]Square
-	WhitePieces []Piece
-	BlackPieces []Piece
-	columns     []string
+	Squares        [64]Square
+	WhitePieces    []Piece
+	BlackPieces    []Piece
+	whitesLastMove LastMove
+	blacksLastMove LastMove
+	columns        []string
 }
 type Move struct {
 	From Square
@@ -24,8 +30,10 @@ type Move struct {
 type MoveResultAction int64
 
 const (
-	Take = iota
+	Take MoveResultAction = iota
 	GoTo
+	EnPassant
+	Castling
 )
 
 type MoveResult struct {

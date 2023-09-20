@@ -40,10 +40,10 @@ func (bot *SimpleBot) Evaluate(game *chess.Game, moves map[chess.Move]*chess.Mov
 	for m, r := range moves {
 		found, p := game.Board.GetPieceAtSquare(m.From.Column, m.From.Row)
 		if !found {
-			return chess.Move{}, errors.New("Could 	not find piece at square")
+			return chess.Move{}, errors.New("could 	not find piece at square")
 		}
 		attacker := p
-		if r.Action == chess.Take {
+		if r.Action == chess.Take || r.Action == chess.EnPassant {
 			value := r.Piece.GetValue()
 			// make temp move & take
 			actualCurrentSquare := attacker.CurrentSquare

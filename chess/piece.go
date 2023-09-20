@@ -279,6 +279,8 @@ func (p *Piece) moveJumpsOverPieces(targetColumn string, targetRow int, b *Board
 
 // moves the piece and returns a MoveResult or an error
 func (p *Piece) Move(targetColumn string, targetRow int, b *Board, dryRun bool) (*MoveResult, error) {
+	previousSquare := p.CurrentSquare // save previous square (for last move)
+
 	targetColumn = strings.ToUpper(targetColumn)
 	if p.moveIsNone(targetColumn, targetRow, b) {
 		return nil, fmt.Errorf("already there")
@@ -286,20 +288,31 @@ func (p *Piece) Move(targetColumn string, targetRow int, b *Board, dryRun bool) 
 	if !dryRun && b.kingIsInMate(p.Colour) {
 		return nil, fmt.Errorf("%v king is in mate", p.Colour)
 	}
+	var moveResult *MoveResult
+	var err error
 	switch p.Type {
 	case pawn:
-		return movePawn(targetColumn, targetRow, b, p, dryRun)
+		moveResult, err = movePawn(targetColumn, targetRow, b, p, dryRun)
 	case rook:
-		return moveRook(targetColumn, targetRow, b, p, dryRun)
+		moveResult, err = moveRook(targetColumn, targetRow, b, p, dryRun)
 	case knight:
-		return moveKnight(targetColumn, targetRow, b, p, dryRun)
+		moveResult, err = moveKnight(targetColumn, targetRow, b, p, dryRun)
 	case bishop:
-		return moveBishop(targetColumn, targetRow, b, p, dryRun)
+		moveResult, err = moveBishop(targetColumn, targetRow, b, p, dryRun)
 	case queen:
-		return moveQueen(targetColumn, targetRow, b, p, dryRun)
+		moveResult, err = moveQueen(targetColumn, targetRow, b, p, dryRun)
 	case king:
-		return moveKing(targetColumn, targetRow, b, p, dryRun)
+		moveResult, err = moveKing(targetColumn, targetRow, b, p, dryRun)
 	default:
-		return nil, fmt.Errorf("unknown piece type: %v", p.Type)
+		moveResult, err = nil, fmt.Errorf("unknown piece type: %v", p.Type)
 	}
+	// if move was successful and not a dry run, set last move
+	if err == nil && !dryRun {
+		if p.Colour == White {
+			b.whitesLastMove = LastMove{p, &Move{From: previousSquare, To: p.CurrentSquare}}
+		} else {
+			b.blacksLastMove = LastMove{p, &Move{From: previousSquare, To: p.CurrentSquare}}
+		}
+	}
+	return moveResult, err
 }

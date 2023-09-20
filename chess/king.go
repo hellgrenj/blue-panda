@@ -19,7 +19,7 @@ func moveKing(targetColumn string, targetRow int, b *Board, p *Piece, dryRun boo
 	if targetRow == p.CurrentSquare.Row && targetColumnValue == currentColumnValue+2 ||
 		targetRow == p.CurrentSquare.Row && targetColumnValue == currentColumnValue-2 {
 		if err := p.tryCastling(targetColumn, targetRow, b, dryRun); err == nil {
-			return &MoveResult{Action: GoTo, Piece: nil}, nil
+			return &MoveResult{Action: Castling, Piece: nil}, nil
 		} else {
 			return nil, fmt.Errorf("castling not allowed, err: %v", err)
 		}
