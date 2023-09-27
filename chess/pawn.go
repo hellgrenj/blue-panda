@@ -103,7 +103,7 @@ func movePawnDiagonally(targetColumn string, targetRow int, b *Board, p *Piece, 
 		} else { // diagonal move, but no enemy piece at target square
 
 			if enemyTaken, err := p.tryEnPassant(b, dryRun); err == nil {
-				return &MoveResult{Action: EnPassant, Piece: enemyTaken}, nil
+				return &MoveResult{Action: Take, Piece: enemyTaken}, nil
 			} else {
 
 				finalErr := fmt.Errorf("piece %v cant move to %v %v, can only move diagonally when taking (en passant not possible, reason: %v)", p, targetColumn, targetRow, err)

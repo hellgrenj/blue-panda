@@ -32,8 +32,6 @@ type MoveResultAction int64
 const (
 	Take MoveResultAction = iota
 	GoTo
-	EnPassant
-	Castling
 )
 
 type MoveResult struct {

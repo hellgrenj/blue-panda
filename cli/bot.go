@@ -43,7 +43,7 @@ func (bot *SimpleBot) Evaluate(game *chess.Game, moves map[chess.Move]*chess.Mov
 			return chess.Move{}, errors.New("could 	not find piece at square")
 		}
 		attacker := p
-		if r.Action == chess.Take || r.Action == chess.EnPassant {
+		if r.Action == chess.Take {
 			value := r.Piece.GetValue()
 			// make temp move & take
 			actualCurrentSquare := attacker.CurrentSquare
