@@ -14,7 +14,7 @@ screenshot of the CLI game:
 ![cli](./cli.PNG)  
 
 another screenshot (this time with a checkmate):  
-![cli](./fools.mate.PNG)  
+![cli](./foolsmate.png)  
 
 **Run tests** (in root): ```go test ./...```  
 
