@@ -1,14 +1,20 @@
 # blue-panda
 
-A chess program and a CLI game written in Go with zero dependencies.
+A chess program and a CLI game written in Go with zero dependencies.  
 
 ![blue-panda](./blue-panda.PNG)  
 (illustration by: [hotpot.ai](https://hotpot.ai/))
 
 
 
-**Run CLI game** (in ./cli): ```go run .```   
+**Run CLI game** (in ./cli): ```go run .```  
+
+screenshot of the CLI game:  
+
 ![cli](./cli.PNG)  
+
+another screenshot (this time with a checkmate):  
+![cli](./fools.mate.PNG)  
 
 **Run tests** (in root): ```go test ./...```  
 

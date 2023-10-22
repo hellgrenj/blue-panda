@@ -112,66 +112,41 @@ func (g *Game) nextMove() {
 
 	for !gameFinished {
 
-		if g.NextToMove == White {
-
+		if g.NextToMove == White { // white to move
 			move, pickErr := g.white.PickMove(g)
 			if pickErr != nil {
 				fmt.Printf("Error picking move: %v", pickErr)
-				if isGameOver(g) {
-					gameFinished = true
-					break
-				}
-
 			} else {
 				_, err := g.move(*move, White)
 				if err != nil {
-					fmt.Printf("Error: %v\n", err)
-					if isGameOver(g) {
-						gameFinished = true
-						break
-					}
-
+					fmt.Printf("Error making move: %v\n", err)
 				} else {
-
 					g.boardVisualizer.VisualizeState(g.Board)
 					fmt.Printf("White moved from %v%v to %v%v", move.From.Column, move.From.Row, move.To.Column, move.To.Row)
 					g.NextToMove = Black
-
 				}
-
 			}
-
-		} else {
-
+		} else { // black to move
 			move, pickErr := g.black.PickMove(g)
 			if pickErr != nil {
 				fmt.Printf("Error picking move: %v", pickErr)
-
-				if isGameOver(g) {
-					gameFinished = true
-					break
-				}
-
 			} else {
-
 				_, err := g.move(*move, Black)
 				if err != nil {
-					fmt.Printf("Error: %v\n", err)
-					if isGameOver(g) {
-						gameFinished = true
-						break
-					}
+					fmt.Printf("Error making move: %v\n", err)
 
 				} else {
 
 					g.boardVisualizer.VisualizeState(g.Board)
 					fmt.Printf("Black moved from %v%v to %v%v", move.From.Column, move.From.Row, move.To.Column, move.To.Row)
 					g.NextToMove = White
-
 				}
-
 			}
-
+		}
+		// after each move, check if game is over
+		if isGameOver(g) {
+			gameFinished = true
+			break
 		}
 	}
 }
