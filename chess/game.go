@@ -134,9 +134,7 @@ func (g *Game) nextMove() {
 				_, err := g.move(*move, Black)
 				if err != nil {
 					fmt.Printf("Error making move: %v\n", err)
-
 				} else {
-
 					g.boardVisualizer.VisualizeState(g.Board)
 					fmt.Printf("Black moved from %v%v to %v%v", move.From.Column, move.From.Row, move.To.Column, move.To.Row)
 					g.NextToMove = White
@@ -148,6 +146,7 @@ func (g *Game) nextMove() {
 			gameFinished = true
 			break
 		}
+		// else time for the next move (next iteration in game loop)
 	}
 }
 func (g *Game) move(move Move, as Colour) (string, error) {
