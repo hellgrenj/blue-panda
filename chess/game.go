@@ -108,9 +108,8 @@ func threefoldRepetitionCheck(g *Game) bool {
 	return false
 }
 func (g *Game) nextMove() {
-	gameFinished := false
 
-	for !gameFinished {
+	for {
 
 		if g.NextToMove == White { // white to move
 			move, pickErr := g.white.PickMove(g)
@@ -143,7 +142,6 @@ func (g *Game) nextMove() {
 		}
 		// after each move, check if game is over
 		if isGameOver(g) {
-			gameFinished = true
 			break
 		}
 		// else time for the next move (next iteration in game loop)
