@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"math/rand"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -13,13 +12,11 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
-	"time"
 
 	"github.com/hellgrenj/blue-panda/chess"
 )
 
 func main() {
-	rand.Seed(time.Now().UnixNano())
 	Menu()
 }
 func Menu() {

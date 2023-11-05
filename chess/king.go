@@ -195,26 +195,19 @@ func (p *Piece) kingTryRun(b *Board) error {
 					pieceAtTargetSquare.InPlay = false // temp take
 				}
 			}
-			// else
 			p.CurrentSquare = square // temp move
 
 			if isCheck, _ := b.kingIsInCheck(p.Colour); !isCheck {
-				// fmt.Printf("King can run to %v%v\n", square.Column, square.Row)
 				if targetSquareOccupied {
 					pieceAtTargetSquare.InPlay = true // reset temp take
 				}
 				p.CurrentSquare = realCurrentSquare // reset temp move
-				return nil
-			} else {
-				fmt.Printf("King could move to  %v%v, but it is still in check\n", square.Column, square.Row)
+				return nil // king is not in check on pending move, king can run
 			}
 			if targetSquareOccupied {
 				pieceAtTargetSquare.InPlay = true // reset temp take
 			}
 			p.CurrentSquare = currentSquare // reset temp move
-
-		} else {
-			fmt.Printf("King cant run to %v%v\n", square.Column, square.Row)
 		}
 		p.CurrentSquare = realCurrentSquare // undo temp move
 	}
