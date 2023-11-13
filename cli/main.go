@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -20,7 +21,7 @@ func main() {
 	Menu()
 }
 func Menu() {
-
+	clearScreen()
 	fmt.Println("What do you want to play?")
 	fmt.Println("1. Human vs Human")
 	fmt.Println("2. Human vs Computer")
@@ -35,8 +36,16 @@ func Menu() {
 		blackPlayer := &Player{Colour: chess.Black}
 		startGame(whitePlayer, blackPlayer)
 	case "2":
-		whitePlayer := &Player{Colour: chess.White}
-		blackPlayer := NewSimpleBot(chess.Black, 1500)
+		clearScreen()
+		selectedColor := SelectColor()
+		var whitePlayer, blackPlayer chess.Player
+		if selectedColor == chess.White {
+			whitePlayer = &Player{Colour: chess.White}
+			blackPlayer = NewSimpleBot(chess.Black, 1500)
+		} else {
+			whitePlayer = NewSimpleBot(chess.White, 1500)
+			blackPlayer = &Player{Colour: chess.Black}
+		}
 		startGame(whitePlayer, blackPlayer)
 	case "3":
 		whitePlayer := NewSimpleBot(chess.White, 200)
@@ -63,6 +72,27 @@ func Menu() {
 		Menu()
 	}
 }
+func SelectColor() chess.Colour {
+	fmt.Println("What color do you want to play?")
+	fmt.Println("1. White")
+	fmt.Println("2. Black")
+	reader := bufio.NewReader(os.Stdin)
+	color, err := reader.ReadString('\n')
+	if err != nil {
+		log.Fatal(err)
+	}
+	color = strings.TrimSpace(color)
+	switch color {
+	case "1":
+		return chess.White
+	case "2":
+		return chess.Black
+	default:
+		fmt.Println("Invalid option. You can enter 1 or 2. please try again")
+		return SelectColor()
+	}
+}
+
 func startGame(whitePlayer chess.Player, blackPlayer chess.Player) chess.Result {
 	game := chess.NewGame(whitePlayer, blackPlayer, &CLIPrinter{})
 	var gracefulStop = make(chan os.Signal)
