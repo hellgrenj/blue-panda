@@ -15,7 +15,7 @@ func moveQueen(targetColumn string, targetRow int, b *Board, p *Piece, dryRun bo
 	if !dryRun && !p.MoveIsLegal(targetColumn, targetRow, b) {
 		return nil, fmt.Errorf("illegal move")
 	}
-	if !p.moveIsStraight(targetColumn, targetRow, b) && !p.moveIsDiagonal(targetColumn, targetRow, b) {
+	if !p.moveIsStraight(targetColumn, targetRow) && !p.moveIsDiagonal(targetColumn, targetRow, b) {
 		return nil, fmt.Errorf("queens can only move straight or diagonally") // not like a knight ...
 	}
 	if _, err := p.moveJumpsOverPieces(targetColumn, targetRow, b); err != nil {
@@ -46,46 +46,46 @@ func (p *Piece) getValidQueenMoves(b *Board) map[Move]*MoveResult {
 	for i := 1; i < 8; i++ {
 		columnIndex := b.getColumnIndex(p.CurrentSquare.Column) + i
 		row := p.CurrentSquare.Row + i
-		possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+		possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	}
 	// Up left
 	for i := 1; i < 8; i++ {
 		columnIndex := b.getColumnIndex(p.CurrentSquare.Column) - i
 		row := p.CurrentSquare.Row + i
-		possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+		possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	}
 	// Down right
 	for i := 1; i < 8; i++ {
 		columnIndex := b.getColumnIndex(p.CurrentSquare.Column) + i
 		row := p.CurrentSquare.Row - i
-		possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+		possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	}
 	// Down left
 	for i := 1; i < 8; i++ {
 		columnIndex := b.getColumnIndex(p.CurrentSquare.Column) - i
 		row := p.CurrentSquare.Row - i
-		possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+		possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	}
 	// horizontal and vertical * 7 squares (those out of the board will be filtered out by tryAddToPossibleSquares)
 	// Up
 	for i := 1; i < 8; i++ {
 		row := p.CurrentSquare.Row + i
-		possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, b.getColumnIndex(p.CurrentSquare.Column))
+		possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, b.getColumnIndex(p.CurrentSquare.Column))
 	}
 	// Down
 	for i := 1; i < 8; i++ {
 		row := p.CurrentSquare.Row - i
-		possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, b.getColumnIndex(p.CurrentSquare.Column))
+		possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, b.getColumnIndex(p.CurrentSquare.Column))
 	}
 	// Right
 	for i := 1; i < 8; i++ {
 		columnIndex := b.getColumnIndex(p.CurrentSquare.Column) + i
-		possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, p.CurrentSquare.Row, columnIndex)
+		possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, p.CurrentSquare.Row, columnIndex)
 	}
 	// Left
 	for i := 1; i < 8; i++ {
 		columnIndex := b.getColumnIndex(p.CurrentSquare.Column) - i
-		possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, p.CurrentSquare.Row, columnIndex)
+		possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, p.CurrentSquare.Row, columnIndex)
 	}
 
 	for _, s := range possibleTargetSquares {

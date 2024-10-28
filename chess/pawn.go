@@ -18,7 +18,7 @@ func movePawn(targetColumn string, targetRow int, b *Board, p *Piece, dryRun boo
 		return nil, fmt.Errorf("illegal move")
 	}
 
-	if p.moveIsStraight(targetColumn, targetRow, b) {
+	if p.moveIsStraight(targetColumn, targetRow) {
 		return movePawnStraight(targetColumn, targetRow, b, p, dryRun)
 	} else if p.moveIsDiagonal(targetColumn, targetRow, b) {
 		return movePawnDiagonally(targetColumn, targetRow, b, p, dryRun)
@@ -211,43 +211,43 @@ func (p *Piece) getValidPawnMoves(b *Board) map[Move]*MoveResult {
 			// Up two squares!
 			columnIndex := b.getColumnIndex(p.CurrentSquare.Column)
 			row := p.CurrentSquare.Row + 2
-			possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+			possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 		}
 		// Up one square
 		columnIndex := b.getColumnIndex(p.CurrentSquare.Column)
 		row := p.CurrentSquare.Row + 1
-		possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+		possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 
 		// Up right one square (covers en passant as well)
 		columnIndex = b.getColumnIndex(p.CurrentSquare.Column) + 1
 		row = p.CurrentSquare.Row + 1
-		possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+		possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 
 		// Up left one square (covers en passant as well)
 		columnIndex = b.getColumnIndex(p.CurrentSquare.Column) - 1
 		row = p.CurrentSquare.Row + 1
-		possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+		possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	} else {
 		if !p.hasMoved {
 			// Down two squares!
 			columnIndex := b.getColumnIndex(p.CurrentSquare.Column)
 			row := p.CurrentSquare.Row - 2
-			possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+			possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 		}
 		// Down one square
 		columnIndex := b.getColumnIndex(p.CurrentSquare.Column)
 		row := p.CurrentSquare.Row - 1
-		possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+		possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 
 		// Down right one square (covers en passant as well)
 		columnIndex = b.getColumnIndex(p.CurrentSquare.Column) + 1
 		row = p.CurrentSquare.Row - 1
-		possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+		possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 
 		// Down left one square (covers en passant as well)
 		columnIndex = b.getColumnIndex(p.CurrentSquare.Column) - 1
 		row = p.CurrentSquare.Row - 1
-		possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+		possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	}
 
 	for _, s := range possibleTargetSquares {

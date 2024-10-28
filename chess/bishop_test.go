@@ -66,7 +66,7 @@ func TestMoveBishop_can_NOT_move_straight(t *testing.T) {
 	_, WB := board.GetPieceAtSquare("B", 5)
 	_, err := WB.Move("B", 4, board, false)
 	if err == nil {
-		t.Errorf("Failed to move the bishop horizontally from F1 to B5, %v", err.Error())
+		t.Errorf("Expected error, but got nil")
 	}
 	expectedErrorMsg := "bishops can only move diagonally"
 	if err.Error() != expectedErrorMsg {

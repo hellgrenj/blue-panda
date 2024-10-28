@@ -101,7 +101,7 @@ func (p *Piece) GetAbbreveation() string {
 		return "??"
 	}
 }
-func (p *Piece) moveIsStraight(targetColumn string, targetRow int, b *Board) bool {
+func (p *Piece) moveIsStraight(targetColumn string, targetRow int) bool {
 	if targetColumn == p.CurrentSquare.Column && targetRow != p.CurrentSquare.Row {
 		return true
 	} else if targetColumn != p.CurrentSquare.Column && targetRow == p.CurrentSquare.Row {
@@ -131,7 +131,7 @@ func (p *Piece) moveIsDiagonal(targetColumn string, targetRow int, b *Board) boo
 		return false
 	}
 }
-func (p *Piece) moveIsNone(targetColumn string, targetRow int, b *Board) bool {
+func (p *Piece) moveIsNone(targetColumn string, targetRow int) bool {
 	if targetColumn == p.CurrentSquare.Column && targetRow == p.CurrentSquare.Row {
 		return true
 	} else {
@@ -234,7 +234,7 @@ func (p *Piece) GetValue() int {
 func (p *Piece) moveJumpsOverPieces(targetColumn string, targetRow int, b *Board) ([]Square, error) {
 	currentColumnIndex := b.getColumnIndex(p.CurrentSquare.Column)
 	targetColumnIndex := b.getColumnIndex(targetColumn)
-	if p.moveIsStraight(targetColumn, targetRow, b) {
+	if p.moveIsStraight(targetColumn, targetRow) {
 		if currentColumnIndex > targetColumnIndex { // if moving left
 			return b.checkPathForOccupiedSquaresStraightLeft(targetColumn, targetRow, p)
 		} else if currentColumnIndex < targetColumnIndex { // if moving right
@@ -282,7 +282,7 @@ func (p *Piece) Move(targetColumn string, targetRow int, b *Board, dryRun bool) 
 	previousSquare := p.CurrentSquare // save previous square (for last move)
 
 	targetColumn = strings.ToUpper(targetColumn)
-	if p.moveIsNone(targetColumn, targetRow, b) {
+	if p.moveIsNone(targetColumn, targetRow) {
 		return nil, fmt.Errorf("already there")
 	}
 	if !dryRun && b.kingIsInMate(p.Colour) {

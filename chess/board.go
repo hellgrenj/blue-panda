@@ -519,7 +519,7 @@ func (b *Board) GetPieceAtSquare(column string, row int) (bool, *Piece) {
 	}
 	return false, &Piece{}
 }
-func addToListIfValidSquare(p *Piece, b *Board, validSquares []Square, row int, columnIndex int) []Square {
+func addToListIfValidSquare(b *Board, validSquares []Square, row int, columnIndex int) []Square {
 	if columnIndex < len(b.columns) && columnIndex >= 0 &&
 		row <= 8 && row >= 0 {
 		s, err := b.getSquare(b.columns[columnIndex], row)

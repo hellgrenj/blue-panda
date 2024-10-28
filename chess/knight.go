@@ -69,7 +69,7 @@ func getPossibleSquaresForKnight(p *Piece, b *Board) []Square {
 	// ..  ..  ..  ..  ..  ..  ..  ..
 	columnIndex := b.getColumnIndex(p.CurrentSquare.Column) + 2
 	row := p.CurrentSquare.Row + 1
-	possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+	possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 
 	// two right and one down
 	// ..  ..  ..  ..  ..  ..  ..  ..
@@ -83,7 +83,7 @@ func getPossibleSquaresForKnight(p *Piece, b *Board) []Square {
 
 	columnIndex = b.getColumnIndex(p.CurrentSquare.Column) + 2
 	row = p.CurrentSquare.Row - 1
-	possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+	possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	// two left and one up
 	// ..  ..  ..  ..  ..  ..  ..  ..
 	// ..  ..  ..  ..  ..  ..  ..  ..
@@ -96,7 +96,7 @@ func getPossibleSquaresForKnight(p *Piece, b *Board) []Square {
 
 	columnIndex = b.getColumnIndex(p.CurrentSquare.Column) - 2
 	row = p.CurrentSquare.Row + 1
-	possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+	possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	// two left and one down
 	// ..  ..  ..  ..  ..  ..  ..  ..
 	// ..  ..  ..  ..  ..  ..  ..  ..
@@ -109,7 +109,7 @@ func getPossibleSquaresForKnight(p *Piece, b *Board) []Square {
 
 	columnIndex = b.getColumnIndex(p.CurrentSquare.Column) - 2
 	row = p.CurrentSquare.Row - 1
-	possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+	possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	// two up and one right
 	// ..  ..  ..  ..  ..  ..  ..  ..
 	// ..  ..  ..  ..  ..  ..  ..  ..
@@ -122,7 +122,7 @@ func getPossibleSquaresForKnight(p *Piece, b *Board) []Square {
 
 	columnIndex = b.getColumnIndex(p.CurrentSquare.Column) + 1
 	row = p.CurrentSquare.Row + 2
-	possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+	possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	// two up and one left
 	// ..  ..  ..  ..  ..  ..  ..  ..
 	// ..  ..  ..  ..  ..  ..  ..  ..
@@ -135,7 +135,7 @@ func getPossibleSquaresForKnight(p *Piece, b *Board) []Square {
 
 	columnIndex = b.getColumnIndex(p.CurrentSquare.Column) - 1
 	row = p.CurrentSquare.Row + 2
-	possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+	possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	// two down and one right
 	// ..  ..  ..  ..  ..  ..  ..  ..
 	// ..  ..  ..  ..  ..  ..  ..  ..
@@ -148,7 +148,7 @@ func getPossibleSquaresForKnight(p *Piece, b *Board) []Square {
 
 	columnIndex = b.getColumnIndex(p.CurrentSquare.Column) + 1
 	row = p.CurrentSquare.Row - 2
-	possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+	possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	// two down and one left
 	// ..  ..  ..  ..  ..  ..  ..  ..
 	// ..  ..  ..  ..  ..  ..  ..  ..
@@ -161,7 +161,7 @@ func getPossibleSquaresForKnight(p *Piece, b *Board) []Square {
 
 	columnIndex = b.getColumnIndex(p.CurrentSquare.Column) - 1
 	row = p.CurrentSquare.Row - 2
-	possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+	possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 
 	return possibleTargetSquares
 }

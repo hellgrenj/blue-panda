@@ -15,7 +15,7 @@ func moveRook(targetColumn string, targetRow int, b *Board, p *Piece, dryRun boo
 	if !dryRun && !p.MoveIsLegal(targetColumn, targetRow, b) {
 		return nil, fmt.Errorf("move is not legal")
 	}
-	if !p.moveIsStraight(targetColumn, targetRow, b) {
+	if !p.moveIsStraight(targetColumn, targetRow) {
 		return nil, fmt.Errorf("rooks can only move straight")
 	}
 	if _, err := p.moveJumpsOverPieces(targetColumn, targetRow, b); err != nil {
@@ -44,22 +44,22 @@ func (p *Piece) getValidRookMoves(b *Board) map[Move]*MoveResult {
 	// Up
 	for i := 1; i < 8; i++ {
 		row := p.CurrentSquare.Row + i
-		possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, b.getColumnIndex(p.CurrentSquare.Column))
+		possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, b.getColumnIndex(p.CurrentSquare.Column))
 	}
 	// Down
 	for i := 1; i < 8; i++ {
 		row := p.CurrentSquare.Row - i
-		possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, b.getColumnIndex(p.CurrentSquare.Column))
+		possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, b.getColumnIndex(p.CurrentSquare.Column))
 	}
 	// Right
 	for i := 1; i < 8; i++ {
 		columnIndex := b.getColumnIndex(p.CurrentSquare.Column) + i
-		possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, p.CurrentSquare.Row, columnIndex)
+		possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, p.CurrentSquare.Row, columnIndex)
 	}
 	// Left
 	for i := 1; i < 8; i++ {
 		columnIndex := b.getColumnIndex(p.CurrentSquare.Column) - i
-		possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, p.CurrentSquare.Row, columnIndex)
+		possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, p.CurrentSquare.Row, columnIndex)
 	}
 
 	for _, s := range possibleTargetSquares {

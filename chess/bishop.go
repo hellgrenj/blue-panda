@@ -45,25 +45,25 @@ func (p *Piece) getValidBishopMoves(b *Board) map[Move]*MoveResult {
 	for i := 1; i < 8; i++ {
 		columnIndex := b.getColumnIndex(p.CurrentSquare.Column) + i
 		row := p.CurrentSquare.Row + i
-		possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+		possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	}
 	// Up left
 	for i := 1; i < 8; i++ {
 		columnIndex := b.getColumnIndex(p.CurrentSquare.Column) - i
 		row := p.CurrentSquare.Row + i
-		possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+		possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	}
 	// Down right
 	for i := 1; i < 8; i++ {
 		columnIndex := b.getColumnIndex(p.CurrentSquare.Column) + i
 		row := p.CurrentSquare.Row - i
-		possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+		possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	}
 	// Down left
 	for i := 1; i < 8; i++ {
 		columnIndex := b.getColumnIndex(p.CurrentSquare.Column) - i
 		row := p.CurrentSquare.Row - i
-		possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+		possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	}
 
 	for _, s := range possibleTargetSquares {

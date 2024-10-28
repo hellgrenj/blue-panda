@@ -202,7 +202,7 @@ func (p *Piece) kingTryRun(b *Board) error {
 					pieceAtTargetSquare.InPlay = true // reset temp take
 				}
 				p.CurrentSquare = realCurrentSquare // reset temp move
-				return nil // king is not in check on pending move, king can run
+				return nil                          // king is not in check on pending move, king can run
 			}
 			if targetSquareOccupied {
 				pieceAtTargetSquare.InPlay = true // reset temp take
@@ -222,45 +222,45 @@ func (p *Piece) getValidKingMoves(b *Board) map[Move]*MoveResult {
 	// Up right
 	columnIndex := b.getColumnIndex(p.CurrentSquare.Column) + 1
 	row := p.CurrentSquare.Row + 1
-	possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+	possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	// Up left
 	columnIndex = b.getColumnIndex(p.CurrentSquare.Column) - 1
 	row = p.CurrentSquare.Row + 1
-	possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+	possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	// Down right
 	columnIndex = b.getColumnIndex(p.CurrentSquare.Column) + 1
 	row = p.CurrentSquare.Row - 1
-	possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+	possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	// Down left
 	columnIndex = b.getColumnIndex(p.CurrentSquare.Column) - 1
 	row = p.CurrentSquare.Row - 1
-	possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+	possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	// up
 	columnIndex = b.getColumnIndex(p.CurrentSquare.Column)
 	row = p.CurrentSquare.Row + 1
-	possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+	possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	// down
 	columnIndex = b.getColumnIndex(p.CurrentSquare.Column)
 	row = p.CurrentSquare.Row - 1
-	possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+	possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	// right
 	columnIndex = b.getColumnIndex(p.CurrentSquare.Column) + 1
 	row = p.CurrentSquare.Row
-	possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+	possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 	// left
 	columnIndex = b.getColumnIndex(p.CurrentSquare.Column) - 1
 	row = p.CurrentSquare.Row
-	possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+	possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 
 	// castling queenside
 	columnIndex = b.getColumnIndex(p.CurrentSquare.Column) - 2
 	row = p.CurrentSquare.Row
-	possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+	possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 
 	// castling kingside
 	columnIndex = b.getColumnIndex(p.CurrentSquare.Column) + 2
 	row = p.CurrentSquare.Row
-	possibleTargetSquares = addToListIfValidSquare(p, b, possibleTargetSquares, row, columnIndex)
+	possibleTargetSquares = addToListIfValidSquare(b, possibleTargetSquares, row, columnIndex)
 
 	for _, s := range possibleTargetSquares {
 		result, err := moveKing(s.Column, s.Row, b, p, true)
