@@ -95,10 +95,8 @@ func SelectColor() chess.Colour {
 
 func startGame(whitePlayer chess.Player, blackPlayer chess.Player) chess.Result {
 	game := chess.NewGame(whitePlayer, blackPlayer, &CLIPrinter{})
-	var gracefulStop = make(chan os.Signal)
-	signal.Notify(gracefulStop, syscall.SIGTERM)
-	signal.Notify(gracefulStop, syscall.SIGINT)
-	signal.Notify(gracefulStop, syscall.SIGSEGV)
+	var gracefulStop = make(chan os.Signal, 1)
+	signal.Notify(gracefulStop, syscall.SIGTERM, syscall.SIGINT, syscall.SIGSEGV)
 	go func() {
 		sig := <-gracefulStop
 		fmt.Printf("\ngame aborted by signal %v, printing history of moves:\n", sig)
@@ -114,6 +112,7 @@ func startGame(whitePlayer chess.Player, blackPlayer chess.Player) chess.Result 
 	printHistory(game)
 	return result
 }
+
 func printHistory(g *chess.Game) {
 	f, err := os.Create("history")
 	if err != nil {
